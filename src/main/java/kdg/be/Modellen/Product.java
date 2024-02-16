@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 @Entity
 public class Product {
 
+    //Properties
     @Id
     @GeneratedValue
     private Long ProductNumber;
@@ -15,10 +16,13 @@ public class Product {
  @ElementCollection
     private Map<Ingredient,int> Ingredienten;
 */
-private double Prijs=0.0;
+    private double Prijs = 0.0;
+    private String Naam;
+    //  private String Recept;
+    private boolean Gedeactiveerd = false;
+    //private boolean Finaal=false;
 
-private String Naam;
-
+    // GET & SET
     public Long getProductNumber() {
         return ProductNumber;
     }
@@ -61,18 +65,12 @@ private String Naam;
         Gedeactiveerd = gedeactiveerd;
     }
 
-  //  private String Recept;
-private boolean Gedeactiveerd=false;
-//private boolean Finaal=false;
+    // Constructors
+    public Product() {
+    }
 
-public Product(){}
-public Product(String  naam, double prijs ){
-    Prijs=prijs;
-
-    Naam=naam;
-
-
-}
-
-
+    public Product(String naam, double prijs) {
+        Prijs = prijs;
+        Naam = naam;
+    }
 }

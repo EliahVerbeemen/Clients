@@ -10,12 +10,11 @@ import java.util.List;
 import java.util.Optional;
 
 
-public interface OrderRepository extends JpaRepository<Order,Long> {
-
+public interface OrderRepository extends JpaRepository<Order, Long> {
 
     List<Order> findByKlant_KlantNumber(long id, Sort sort);
 
-   Optional<Order> findByOrderNumber(Long Id);
+    Optional<Order> findByOrderNumber(Long Id);
 
 
 }

@@ -21,11 +21,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
 public class KlantenController {
-
     private KlantRepository KlantRepository;
-
     private OrderRepository OrderRepository;
-
 
     public KlantenController(KlantRepository klantRepository, OrderRepository orderRepository) {
 
@@ -79,19 +76,19 @@ public class KlantenController {
         Optional<Klant> klant = KlantRepository.findById(order.getKlant().getKlantNumber());
 
         if (klant.isPresent()) {
-        order.setBestellingsStatus(Order.BestellingStatus.Niet_bevestigd);
-        if(LocalTime.now().isBefore(LocalTime.of(22,0)));
+            order.setBestellingsStatus(Order.BestellingStatus.Niet_bevestigd);
+            if (LocalTime.now().isBefore(LocalTime.of(22, 0))) ;
 
 
-        //TODO stuur AMPQ signaal naar batch van vandaag
+                //TODO stuur AMPQ signaal naar batch van vandaag
 
-        else{
+            else {
 
-            //TODO stuur AMPQ signaal naar batch van morgen
+                //TODO stuur AMPQ signaal naar batch van morgen
 
 
             }
-        return ResponseEntity.status(HttpStatus.CREATED).body(order);
+            return ResponseEntity.status(HttpStatus.CREATED).body(order);
 
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -102,15 +99,14 @@ public class KlantenController {
 
         Optional<Order> optioneleOrder = this.OrderRepository.findByOrderNumber(OrderId);
         if (optioneleOrder.isPresent()) {
-            Order vroegerOrder=optioneleOrder.get();
-            Order nieuwOrder=new Order(vroegerOrder.getKlant(),LocalDate.now(),vroegerOrder.getProducten(), Order.BestellingStatus.Niet_bevestigd);
-           Order nieuwOrderMetPrijs= SetPrijsinfo(nieuwOrder);
+            Order vroegerOrder = optioneleOrder.get();
+            Order nieuwOrder = new Order(vroegerOrder.getKlant(), LocalDate.now(), vroegerOrder.getProducten(), Order.BestellingStatus.Niet_bevestigd);
+            Order nieuwOrderMetPrijs = SetPrijsinfo(nieuwOrder);
             this.OrderRepository.save(nieuwOrderMetPrijs);
             return ResponseEntity.status(HttpStatus.CREATED).body(nieuwOrderMetPrijs);
 
 
-        }
-        else{
+        } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
         }
@@ -119,24 +115,21 @@ public class KlantenController {
     }
 
     @PatchMapping
-    public ResponseEntity<Order> BevestigOrder(long orderId){
+    public ResponseEntity<Order> BevestigOrder(long orderId) {
 
-        Optional<Order> optionerelOrder=this.OrderRepository.findById(orderId);
-        if(optionerelOrder.isPresent()){
+        Optional<Order> optionerelOrder = this.OrderRepository.findById(orderId);
+        if (optionerelOrder.isPresent()) {
 
-            Order order=optionerelOrder.get();
+            Order order = optionerelOrder.get();
 
 
             order.setBestellingsStatus(Order.BestellingStatus.Bevestigd);
-            Order orderMetPrijs=SetPrijsinfo(order);
+            Order orderMetPrijs = SetPrijsinfo(order);
             this.OrderRepository.save(orderMetPrijs);
             return ResponseEntity.ok().body(orderMetPrijs);
 
 
-        }
-
-
-        else{
+        } else {
 
 
             return ResponseEntity.notFound().build();
@@ -145,32 +138,27 @@ public class KlantenController {
         }
 
 
-
-
     }
 
     @PatchMapping("/order")
-    public ResponseEntity<Order> AnnuleerOrder(long orderId){
-        Optional<Order> optionerelOrder=this.OrderRepository.findById(orderId);
-        if(optionerelOrder.isPresent()){
+    public ResponseEntity<Order> AnnuleerOrder(long orderId) {
+        Optional<Order> optionerelOrder = this.OrderRepository.findById(orderId);
+        if (optionerelOrder.isPresent()) {
 
 
-            Order order=optionerelOrder.get();
-            if(order.getBestellingsStatus()!= Order.BestellingStatus.Bevestigd) {
+            Order order = optionerelOrder.get();
+            if (order.getBestellingsStatus() != Order.BestellingStatus.Bevestigd) {
                 order.setBestellingsStatus(Order.BestellingStatus.Geannulleerd);
                 return ResponseEntity.ok().body(order);
 
-            }
-            else{
+            } else {
                 return ResponseEntity.status(405).build();
 
 
             }
 
 
-
-        }
-        else{
+        } else {
 
             return ResponseEntity.notFound().build();
 
@@ -180,85 +168,72 @@ public class KlantenController {
     }
 
 
- //Niet vergeten om wat validatie te doen. Orders zonder producten bvb
+    //Niet vergeten om wat validatie te doen. Orders zonder producten bvb
     //Spring voorziet default annotaties
-    private Order SetPrijsinfo(Order order){
-              AtomicReference<Double> prijsZonderKorting= new AtomicReference<>((double) 0);
+    private Order SetPrijsinfo(Order order) {
+        AtomicReference<Double> prijsZonderKorting = new AtomicReference<>((double) 0);
 
 
-        Loyaliteitsklasse loyaliteitsklasse=VerkrijgKlasse(order.getKlant());
-        double korting=loyaliteitsklasse.getKorting();
+        Loyaliteitsklasse loyaliteitsklasse = VerkrijgKlasse(order.getKlant());
+        double korting = loyaliteitsklasse.getKorting();
 
-order.getProducten().forEach((product,aantal)-> prijsZonderKorting.updateAndGet(v ->  (v + product.getPrijs() * aantal)));
-order.setKorting(prijsZonderKorting.get()*korting);
-order.setTotaalprijs(prijsZonderKorting.get()-prijsZonderKorting.get()*korting);
-return order;
+        order.getProducten().forEach((product, aantal) -> prijsZonderKorting.updateAndGet(v -> (v + product.getPrijs() * aantal)));
+        order.setKorting(prijsZonderKorting.get() * korting);
+        order.setTotaalprijs(prijsZonderKorting.get() - prijsZonderKorting.get() * korting);
+        return order;
 
     }
-
 
 
     private Loyaliteitsklasse VerkrijgKlasse(@RequestBody Klant klant) {
 
-   return Klant.LoyliteitsKlassen.get((int) (Klant.LoyliteitsKlassen.stream().filter(e->e.getMinimumPuntenAantal()< klant.getPuntenAantal()).count()-1)) ;
+        return Klant.LoyliteitsKlassen.get((int) (Klant.LoyliteitsKlassen.stream().filter(e -> e.getMinimumPuntenAantal() < klant.getPuntenAantal()).count() - 1));
 
 
     }
 
 
+    @GetMapping("/Klant/loyaliteit")
+    public ResponseEntity<Loyaliteitsklasse> VerkrijgLoyaliteitsNiveau(@RequestBody Long klantId) {
 
-@GetMapping("/Klant/loyaliteit")
-public ResponseEntity<Loyaliteitsklasse> VerkrijgLoyaliteitsNiveau(@RequestBody Long klantId){
+        Optional<Klant> optioneleKlant = this.KlantRepository.findById(klantId);
 
- Optional<Klant> optioneleKlant=  this.KlantRepository.findById(klantId);
+        if (optioneleKlant.isPresent()) {
+            Klant klant = optioneleKlant.get();
+            return ResponseEntity.ok().body(VerkrijgKlasse(klant));
 
-    if(optioneleKlant.isPresent()){
-        Klant klant=optioneleKlant.get();
-        return ResponseEntity.ok().body(VerkrijgKlasse(klant));
-
-    }
-    else{
-        return ResponseEntity.notFound().build();
-    }
-
-
-}
-
-
-
-
-
-
-
-
-
-
-//Blijkbaar is er ook een exists by id methode
-//Er is over nadenken hoe dat we dit kunnen doen
-@GetMapping("/order")
-public ResponseEntity<List<Order>> GetBestellingen(@RequestBody Long klantId,@RequestParam Optional<String> datum,@RequestParam Optional<String> status){
-
-    Optional<Klant> optioneleKlant=KlantRepository.findById(klantId);
-    if(optioneleKlant.isPresent()){
-        Klant klant=optioneleKlant.get();
-
-    List<Order>orders=new ArrayList<>();
-        if(datum.isPresent()){
-Sort sort=Sort.by(Sort.Direction.ASC,"bestelDatum");
-orders=OrderRepository.findByKlant_KlantNumber(klantId,sort);
-
-            return ResponseEntity.ok().body(orders);
-    }
-        else{
-
-            return ResponseEntity.ok().body(OrderRepository.findByKlant_KlantNumber(klantId,Sort.by("besteldatum")));
+        } else {
+            return ResponseEntity.notFound().build();
         }
 
-}
-    else{
-        return ResponseEntity.notFound().build();
+
     }
-}
+
+
+    //Blijkbaar is er ook een exists by id methode
+//Er is over nadenken hoe dat we dit kunnen doen
+    @GetMapping("/order")
+    public ResponseEntity<List<Order>> GetBestellingen(@RequestBody Long klantId, @RequestParam Optional<String> datum, @RequestParam Optional<String> status) {
+
+        Optional<Klant> optioneleKlant = KlantRepository.findById(klantId);
+        if (optioneleKlant.isPresent()) {
+            Klant klant = optioneleKlant.get();
+
+            List<Order> orders = new ArrayList<>();
+            if (datum.isPresent()) {
+                Sort sort = Sort.by(Sort.Direction.ASC, "bestelDatum");
+                orders = OrderRepository.findByKlant_KlantNumber(klantId, sort);
+
+                return ResponseEntity.ok().body(orders);
+            } else {
+
+                return ResponseEntity.ok().body(OrderRepository.findByKlant_KlantNumber(klantId, Sort.by("besteldatum")));
+            }
+
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
 
 }

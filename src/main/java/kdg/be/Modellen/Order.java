@@ -12,6 +12,7 @@ import java.util.Map;
 @JsonSerialize
 public class Order {
 
+    // Properties
     @Id
     @GeneratedValue
     private Long orderNumber;
@@ -24,11 +25,18 @@ public class Order {
     private LocalDate BestelDatum;
   //  @JsonSerialize(keyUsing = OrdersDeserialisatie.class)
 
+    @Transient
+    public double Korting;
+
+    public double Totaalprijs;
+
+    private BestellingStatus BestellingsStatus;
+
     @ElementCollection
     private Map<Product,Integer> Producten=new HashMap<>();
 
     //Berekende kolom prijs
-
+    // GET & SET
     public Long getOrderNumber() {
         return orderNumber;
     }
@@ -62,7 +70,6 @@ public class Order {
     }
 
 //Voor communicatie naar de klant
-    public double Totaalprijs;
 
     public double getTotaalprijs() {
         return Totaalprijs;
@@ -80,11 +87,6 @@ public class Order {
         Korting = korting;
     }
 
-    @Transient
-    public double Korting;
-
-private BestellingStatus BestellingsStatus;
-
     public BestellingStatus getBestellingsStatus() {
         return BestellingsStatus;
     }
@@ -93,18 +95,7 @@ private BestellingStatus BestellingsStatus;
         BestellingsStatus = bestellingsStatus;
     }
 
-    public enum BestellingStatus {
-
-        Niet_bevestigd,
-        Bevestigd,
-
-        Geannulleerd
-
-
-
-
-    }
-
+    // Constructors
     public Order(Klant klant, LocalDate bestelDatum, Map<Product, Integer> producten, BestellingStatus bestellingsStatus) {
 
         this.klant = klant;
@@ -115,8 +106,14 @@ private BestellingStatus BestellingsStatus;
 
     public Order(){
 
-}
+    }
     public Order(Klant klant){
 
+    }
+
+    public enum BestellingStatus {
+        Niet_bevestigd,
+        Bevestigd,
+        Geannulleerd
     }
 }
