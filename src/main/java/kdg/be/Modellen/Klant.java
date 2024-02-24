@@ -1,14 +1,11 @@
 package kdg.be.Modellen;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import kdg.be.SerializatieHelpers.SetSerialisatie;
+import org.hibernate.annotations.Fetch;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 public class Klant implements Serializable {
@@ -18,13 +15,13 @@ public class Klant implements Serializable {
     @GeneratedValue
     public Long klantNumber;
 
-    private int PuntenAantal=0;
+    private int points=0;
 
     @Enumerated(EnumType.STRING)
     private Klanttype Klanttype;
 
-    @OneToMany(mappedBy = "klant")
-    private Set<Order> Orders; //Dit is een set, overridde equals en hashcode
+    @OneToMany(mappedBy = "klant", fetch = FetchType.EAGER)
+    private Set<Order> klantOrders=new HashSet<>(); //Dit is een set, overridde equals en hashcode
 
     // GET & SET
     public Klant.Klanttype getKlanttype() {
@@ -36,11 +33,12 @@ public class Klant implements Serializable {
     }
 
     public Set<Order> getOrders() {
-        return Orders;
+        return klantOrders;
     }
 
-    public void setOrders(Set<Order> orders) {
-        Orders = orders;
+
+    public void setOrders(Set<Order> klantOrders) {
+       this.klantOrders  = klantOrders;
     }
 
     public Long getKlantNumber() {
@@ -51,45 +49,46 @@ public class Klant implements Serializable {
         klantNumber = klantNumber;
     }
 
-    public int getPuntenAantal() {
-        return PuntenAantal;
+    public int getPoints() {
+        return points;
     }
 
-    public void setPuntenAantal(int puntenAantal) {
-        PuntenAantal = puntenAantal;
+    public void setPoints(int points) {
+        this.points = points;
     }
 
+    public Set<Order> getKlantOrders() {
+        return klantOrders;
+    }
+
+    public void setKlantOrders(Set<Order> klantOrders) {
+        this.klantOrders = klantOrders;
+    }
 
     public enum Klanttype{
         B2B, B2C
 
     }
 
-    @Transient
-    public  static   List<Loyaliteitsklasse> LoyliteitsKlassen= new ArrayList<Loyaliteitsklasse>() {
-        {new Loyaliteitsklasse("Brons",0,0.00);}
-
-
-    };
 
 
 
+    public Klant(int points){
+        this.points=points;
 
+    }
 
+    public Klant(Klanttype klanttype){
+        this.setKlanttype(klanttype);
 
-
-
-
-
-
-
+    }
 
 public Klant(){
 }
 
 public Klant(Klanttype klanttype, int puntenAantal){
         Klanttype=klanttype;
-        PuntenAantal=puntenAantal;
+        this.points=puntenAantal;
 
 
 

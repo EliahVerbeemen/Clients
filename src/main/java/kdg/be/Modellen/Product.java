@@ -1,5 +1,7 @@
 package kdg.be.Modellen;
 
+import jakarta.annotation.Nullable;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -12,11 +14,14 @@ public class Product {
     @GeneratedValue
     private Long ProductNumber;
 
-    /*
- @ElementCollection
+
+ /*@ElementCollection
     private Map<Ingredient,int> Ingredienten;
 */
-    private double Prijs = 0.0;
+
+
+
+    private double Prijs;
     private String Naam;
     //  private String Recept;
     private boolean Gedeactiveerd = false;
@@ -62,6 +67,12 @@ public class Product {
     }
 
     public void setGedeactiveerd(boolean gedeactiveerd) {
+        Gedeactiveerd = gedeactiveerd;
+    }
+
+    public Product(double prijs, String naam, boolean gedeactiveerd) {
+        Prijs = prijs;
+        Naam = naam;
         Gedeactiveerd = gedeactiveerd;
     }
 

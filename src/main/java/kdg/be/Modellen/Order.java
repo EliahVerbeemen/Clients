@@ -5,11 +5,12 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Entity
-@JsonSerialize
 public class Order {
 
     // Properties
@@ -17,12 +18,13 @@ public class Order {
     @GeneratedValue
     private Long orderNumber;
 
-    @ManyToOne(optional = true)
-    @JoinColumn(   name = "klant_id")
+    @ManyToOne(optional = true,cascade =CascadeType.ALL,fetch = FetchType.EAGER)
+   // @JoinColumn(   name = "klant_id")
     @JsonBackReference
     private Klant klant;
 
-    private LocalDate BestelDatum;
+
+    private LocalDate bestelDatum;
   //  @JsonSerialize(keyUsing = OrdersDeserialisatie.class)
 
     @Transient
@@ -32,8 +34,8 @@ public class Order {
 
     private BestellingStatus BestellingsStatus;
 
-    @ElementCollection
-    private Map<Product,Integer> Producten=new HashMap<>();
+    @ElementCollection(fetch=FetchType.EAGER)
+    private Map<Long,Integer> producs=new HashMap<>();
 
     //Berekende kolom prijs
     // GET & SET
@@ -54,20 +56,14 @@ public class Order {
     }
 
     public LocalDate getBestelDatum() {
-        return BestelDatum;
+        return bestelDatum;
     }
 
     public void setBestelDatum(LocalDate bestelDatum) {
-        BestelDatum = bestelDatum;
+        this.bestelDatum = bestelDatum;
     }
 
-    public Map<Product, Integer> getProducten() {
-        return Producten;
-    }
 
-    public void setProducten(Map<Product, Integer> producten) {
-        Producten = producten;
-    }
 
 //Voor communicatie naar de klant
 
@@ -95,21 +91,44 @@ public class Order {
         BestellingsStatus = bestellingsStatus;
     }
 
+    public Map<Long, Integer> getProducs() {
+        return producs;
+    }
+
+    public void setProducs(Map<Long, Integer> producs) {
+        this.producs = producs;
+    }
+
+    public List<String> getRemarks() {
+        return Remarks;
+    }
+
+    public void setRemarks(List<String> remarks) {
+        Remarks = remarks;
+    }
+
+    @ElementCollection
+    private List<String> Remarks=new ArrayList<>();
     // Constructors
-    public Order(Klant klant, LocalDate bestelDatum, Map<Product, Integer> producten, BestellingStatus bestellingsStatus) {
+    public Order(Klant klant, LocalDate bestelDatum, Map<Long, Integer> producten, BestellingStatus bestellingsStatus) {
 
         this.klant = klant;
-        BestelDatum = bestelDatum;
-        Producten = producten;
+        this.bestelDatum = bestelDatum;
+        producs = producten;
         BestellingsStatus = bestellingsStatus;
+    }
+
+    public Order( Map<Long, Integer> producten, Klant klant) {
+
+        this.klant = klant;
+        producs = producten;
+
     }
 
     public Order(){
 
     }
-    public Order(Klant klant){
 
-    }
 
     public enum BestellingStatus {
         Niet_bevestigd,
