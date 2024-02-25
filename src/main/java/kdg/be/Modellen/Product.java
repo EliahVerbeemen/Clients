@@ -26,6 +26,7 @@ public class Product {
     //  private String Recept;
     private boolean Gedeactiveerd = false;
     //private boolean Finaal=false;
+private Long bakkeryId;
 
     // GET & SET
     public Long getProductNumber() {
@@ -70,10 +71,10 @@ public class Product {
         Gedeactiveerd = gedeactiveerd;
     }
 
-    public Product(double prijs, String naam, boolean gedeactiveerd) {
+    public Product(double prijs, String naam,  Long bakkeryId) {
         Prijs = prijs;
         Naam = naam;
-        Gedeactiveerd = gedeactiveerd;
+       this.bakkeryId=bakkeryId;
     }
 
     // Constructors

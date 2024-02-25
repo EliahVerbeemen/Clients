@@ -1,14 +1,12 @@
 package kdg.be;
 
 import kdg.be.Managers.LoyalityClassManager;
-import kdg.be.Modellen.Klant;
+import kdg.be.Modellen.Customer;
 import kdg.be.Modellen.LoyalityClasses;
 import kdg.be.Modellen.Product;
 import kdg.be.Repositories.KlantRepository;
-import kdg.be.Repositories.OrderRepository;
 import kdg.be.Repositories.ProductRepository;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.annotation.Bean;
 
 @org.springframework.context.annotation.Configuration
 public class Configuration implements InitializingBean{
@@ -16,6 +14,8 @@ private ProductRepository productRepository;
 private KlantRepository klantRepository;
 
 private LoyalityClassManager loyalityClassManager;
+
+//Dit is 1 van de mogelijkheden om spring een methode uit te laten voeren
 public Configuration(ProductRepository productRepository, KlantRepository klantRepository, LoyalityClassManager loyalityClassManager){
 
     this.productRepository=productRepository;
@@ -26,11 +26,13 @@ public Configuration(ProductRepository productRepository, KlantRepository klantR
 
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet()  {
 
         productRepository.save(new Product("naam",5.0));
-        klantRepository.save(new Klant(Klant.Klanttype.B2B));
-klantRepository.findAll().forEach(e->System.out.println(e.getKlantNumber()));
+       // Deze klant heeft als klantennummer 1
+        klantRepository.save(new Customer(Customer.Klanttype.B2B));
+
+        //Voeg de standaard loyaliteitsklasse toe
 loyalityClassManager.save(new LoyalityClasses("brons",0,0d));
 loyalityClassManager.save(new LoyalityClasses("zilver",1000,0.05d));
         loyalityClassManager.save(new LoyalityClasses("goud",5000,0.10d));

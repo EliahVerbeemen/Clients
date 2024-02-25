@@ -10,7 +10,7 @@ import java.io.IOException;
 @ControllerAdvice
 public class errorHandler {
 
-    @ExceptionHandler({IOException.class})
+    @ExceptionHandler({AfterTenOClockError.class})
     public ResponseEntity<String> errorHandle(){
 
         return  ResponseEntity.status(HttpStatus.I_AM_A_TEAPOT).body("everything is just fine");

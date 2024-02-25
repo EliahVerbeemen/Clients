@@ -1,7 +1,6 @@
 package kdg.be.Modellen;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -21,7 +20,7 @@ public class Order {
     @ManyToOne(optional = true,cascade =CascadeType.ALL,fetch = FetchType.EAGER)
    // @JoinColumn(   name = "klant_id")
     @JsonBackReference
-    private Klant klant;
+    private Customer klant;
 
 
     private LocalDate bestelDatum;
@@ -47,11 +46,11 @@ public class Order {
         this.orderNumber = orderNumber;
     }
 
-    public Klant getKlant() {
+    public Customer getKlant() {
         return klant;
     }
 
-    public void setKlant(Klant klant) {
+    public void setKlant(Customer klant) {
         this.klant = klant;
     }
 
@@ -110,7 +109,7 @@ public class Order {
     @ElementCollection
     private List<String> Remarks=new ArrayList<>();
     // Constructors
-    public Order(Klant klant, LocalDate bestelDatum, Map<Long, Integer> producten, BestellingStatus bestellingsStatus) {
+    public Order(Customer klant, LocalDate bestelDatum, Map<Long, Integer> producten, BestellingStatus bestellingsStatus) {
 
         this.klant = klant;
         this.bestelDatum = bestelDatum;
@@ -118,7 +117,7 @@ public class Order {
         BestellingsStatus = bestellingsStatus;
     }
 
-    public Order( Map<Long, Integer> producten, Klant klant) {
+    public Order( Map<Long, Integer> producten, Customer klant) {
 
         this.klant = klant;
         producs = producten;

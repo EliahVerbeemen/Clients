@@ -50,7 +50,7 @@ public class Test {
     }
 
     @OneToOne(optional = true)
-    public Klant klant;
+    public Customer klant;
 
     @Override
     public String toString(){

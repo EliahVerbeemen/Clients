@@ -1,19 +1,16 @@
 package kdg.be.Controllers;
 
 import kdg.be.Managers.LoyalityClassManager;
-import kdg.be.Modellen.Klant;
+import kdg.be.Modellen.Customer;
 import kdg.be.Modellen.LoyalityClasses;
 import kdg.be.Modellen.Order;
 import kdg.be.Modellen.Product;
 import kdg.be.Repositories.KlantRepository;
 import kdg.be.Repositories.OrderRepository;
 import kdg.be.Repositories.ProductRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Key;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class CustomerManagerController {
@@ -49,7 +46,7 @@ public List<LoyalityClasses> ShowLoyalityClasses(){
 
     }
     @GetMapping("/customers")
-    public List<Klant> AllCustomers(){
+    public List<Customer> AllCustomers(){
 
         return klantRepository.findAll();
 

@@ -1,14 +1,12 @@
 package kdg.be.Modellen;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import org.hibernate.annotations.Fetch;
 
 import java.io.Serializable;
 import java.util.*;
 
 @Entity
-public class Klant implements Serializable {
+public class Customer implements Serializable {
 
     // Properties
     @Id
@@ -24,11 +22,11 @@ public class Klant implements Serializable {
     private Set<Order> klantOrders=new HashSet<>(); //Dit is een set, overridde equals en hashcode
 
     // GET & SET
-    public Klant.Klanttype getKlanttype() {
+    public Customer.Klanttype getKlanttype() {
         return Klanttype;
     }
 
-    public void setKlanttype(Klant.Klanttype klanttype) {
+    public void setKlanttype(Customer.Klanttype klanttype) {
         Klanttype = klanttype;
     }
 
@@ -73,20 +71,20 @@ public class Klant implements Serializable {
 
 
 
-    public Klant(int points){
+    public Customer(int points){
         this.points=points;
 
     }
 
-    public Klant(Klanttype klanttype){
+    public Customer(Klanttype klanttype){
         this.setKlanttype(klanttype);
 
     }
 
-public Klant(){
+public Customer(){
 }
 
-public Klant(Klanttype klanttype, int puntenAantal){
+public Customer(Klanttype klanttype, int puntenAantal){
         Klanttype=klanttype;
         this.points=puntenAantal;
 

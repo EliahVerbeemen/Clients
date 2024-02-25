@@ -1,15 +1,19 @@
 package kdg.be.Controllers;
 
+import kdg.be.AfterTenOClockError;
 import kdg.be.Managers.LoyalityClassManager;
 import kdg.be.Modellen.*;
 import kdg.be.Modellen.DTO.CustomerWithProducts;
+import kdg.be.RabbitMQ.RabbitSender;
 import kdg.be.Repositories.KlantRepository;
 import kdg.be.Repositories.OrderRepository;
 import kdg.be.Repositories.ProductRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +24,9 @@ import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+
 @RestController
+//Elke oute begint met api (conventie voor api's)
 @RequestMapping("/api")
 public class CustomerController {
     private KlantRepository KlantRepository;
@@ -29,14 +35,18 @@ public class CustomerController {
 
     private LoyalityClassManager loyalityClassManager;
 
+    private RabbitSender rabbitSender;
+
     Logger logger= LoggerFactory.getLogger(CustomerController.class);
 
-    public CustomerController(KlantRepository klantRepository, OrderRepository orderRepository, ProductRepository productRepository, LoyalityClassManager loyalityClassManager) {
+    public CustomerController(KlantRepository klantRepository, OrderRepository orderRepository, ProductRepository productRepository, LoyalityClassManager loyalityClassManager
+    , RabbitSender rabbitSender) {
 
         this.KlantRepository = klantRepository;
         this.OrderRepository = orderRepository;
         this.productRepository=productRepository;
         this.loyalityClassManager=loyalityClassManager;
+        this.rabbitSender=rabbitSender;
 
     }
 
@@ -47,9 +57,10 @@ public class CustomerController {
         return  ResponseEntity.status(HttpStatus.CREATED).body(test);
 
     }
-
+//Dus deze route bereik je via /api/klant
+    //
     @PostMapping(value = "/klant")
-    public ResponseEntity<Klant> CreateKlant(@RequestBody Klant klant) {
+    public ResponseEntity<Customer> CreateKlant(@RequestBody Customer klant) {
 
         this.KlantRepository.save(klant);
         return ResponseEntity.status(HttpStatus.CREATED).body(klant);
@@ -58,9 +69,10 @@ public class CustomerController {
     }
 
     @DeleteMapping(value = "/klant")
+    //Postman ==> raw ==>1 (selectbox = json)
     public HttpStatus DeleteKlant(@RequestBody Long klantId) {
 
-        Optional<Klant> klant = KlantRepository.findById(klantId);
+        Optional<Customer> klant = KlantRepository.findById(klantId);
         if (klant.isPresent()) {
 
             KlantRepository.deleteKlantByKlantNumber(klantId);
@@ -72,10 +84,10 @@ public class CustomerController {
 
 
     @PutMapping(value = "/klant", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Klant> UpdateKlant(@RequestBody Klant geupdateklant) {
-        Optional<Klant> oudeklant = this.KlantRepository.findById(geupdateklant.getKlantNumber());
+    public ResponseEntity<Customer> UpdateKlant(@RequestBody Customer geupdateklant) {
+        Optional<Customer> oudeklant = this.KlantRepository.findById(geupdateklant.getKlantNumber());
         if (oudeklant.isPresent()) {
-            Klant klant = oudeklant.get();
+            Customer klant = oudeklant.get();
             klant.setKlanttype(geupdateklant.getKlanttype());
             KlantRepository.save(klant);
             return ResponseEntity.status(HttpStatus.CREATED).body(klant);
@@ -87,63 +99,66 @@ public class CustomerController {
     }
 
     //TODO Splits deze methode op in kleinere
-    //{"klantId":1,"order":{"1":3}}
+    // in het body bijvoorbeeld:  {"klantId":1,"order":{"1":3}}
+    //Json [] voor een lijst en {} voor een map of object
     @PostMapping(value = "/order", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Order> PlaatsOrder(@RequestBody CustomerWithProducts customerWithProducts) {
 
-        Optional<Klant> optioneleKlant = KlantRepository.findById(customerWithProducts.getKlantId());
-        if (optioneleKlant.isPresent()) {
-            Klant klant=optioneleKlant.get();
+    Optional<Customer> optioneleKlant = KlantRepository.findById(customerWithProducts.getKlantId());
+    if (optioneleKlant.isPresent()) {
+        Customer klant = optioneleKlant.get();
 
-            //Maak een volledige kopie (deep copy) van de
-            Order order=new Order();
-            order.setBestellingsStatus(Order.BestellingStatus.Niet_bevestigd);
-            order.setBestelDatum(LocalDate.now());
+        //Maak een volledige kopie (deep copy) van de
+        Order order = new Order();
+        order.setBestellingsStatus(Order.BestellingStatus.Niet_bevestigd);
+        order.setBestelDatum(LocalDate.now());
 
-           Map<Product,Integer> productenVoorDezeBestelling=new HashMap<>();
-           AtomicReference<Double> totaalZonderKorting= new AtomicReference<>(0d);
-            customerWithProducts.getOrder().forEach((productId, aantal)->
-            {
-              Optional<Product> optioneelproduct= this.productRepository.findById(productId);
-              if(optioneelproduct.isPresent()){
-                  Product product=optioneelproduct.get();
-                    productenVoorDezeBestelling.put(product,aantal);
-                  totaalZonderKorting.updateAndGet(v -> ( product.getPrijs() * aantal));
-                  order.getProducs().put(productId,aantal);
-              }
-              else{
-                  //Maak de klant er op attent dat we 1 van zijn producten niet kenden;
-              }
-            });
-
-            if (LocalTime.now().isBefore(LocalTime.of(22, 0))) ;
-
-
-                //TODO stuur AMPQ signaal naar batch van vandaag
-
-            else {
-
-                //TODO stuur AMPQ signaal naar batch van morgen
-
-
+        Map<Product, Integer> productenVoorDezeBestelling = new HashMap<>();
+        AtomicReference<Double> totaalZonderKorting = new AtomicReference<>(0d);
+        customerWithProducts.getOrder().forEach((productId, aantal) ->
+        {
+            Optional<Product> optioneelproduct = this.productRepository.findById(productId);
+            if (optioneelproduct.isPresent()) {
+                Product product = optioneelproduct.get();
+                productenVoorDezeBestelling.put(product, aantal);
+                totaalZonderKorting.updateAndGet(v -> (product.getPrijs() * aantal));
+                order.getProducs().put(productId, aantal);
+            } else {
+                //Maak de klant er op attent dat we 1 van zijn producten niet kenden;
             }
-            order.setTotaalprijs(totaalZonderKorting.get());
-            order.setKlant(klant);
-            klant.getOrders().add(order);
-            this.OrderRepository.save(order);
-            this.KlantRepository.save(klant);
-            //Validatie geen lege bestellingen of totaalprijze van nul
-            return ResponseEntity.status(HttpStatus.CREATED).body(order);
+        });
 
+       ;
+
+
+            //TODO stuur AMPQ signaal naar batch (methode is al geshreven deserialisatie is misschien nog
+        //foutief
+
+
+        order.setTotaalprijs(totaalZonderKorting.get());
+        order.setKlant(klant);
+        klant.getOrders().add(order);
+        this.OrderRepository.save(order);
+        this.KlantRepository.save(klant);
+        //Validatie geen lege bestellingen of totaalprijze van nul
+        if (BeforeTenOClock()) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(order);
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        else{
+            order.getRemarks().add("orders placed after 10.0 pm. will be delivered the next day");
+        }
+
     }
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+}
+
+
 
     @PostMapping("/order/history/{OrderId}")
     public ResponseEntity<Order> HerhaalBestelling(@RequestBody Long klantId,@PathVariable Long OrderId) {
 
         Optional<Order> optioneleOrder = this.OrderRepository.findByOrderNumber(OrderId);
-        Optional<Klant> optioneleklant = this.KlantRepository.findById(klantId);
+        Optional<Customer> optioneleklant = this.KlantRepository.findById(klantId);
 System.out.println(klantId);
         if (optioneleOrder.isPresent()&& optioneleklant.isPresent()) {
             Order vroegerOrder = optioneleOrder.get();
@@ -152,7 +167,7 @@ System.out.println(klantId);
             Order nieuwOrder = new Order(vroegerOrder.getKlant(), LocalDate.now(), newProdutMap, Order.BestellingStatus.Niet_bevestigd);
          nieuwOrder.setOrderNumber(null);
             Order nieuwOrderMetPrijs = SetPrijsinfo(nieuwOrder);
-            Klant klant=optioneleklant.get();
+            Customer klant=optioneleklant.get();
             nieuwOrderMetPrijs.setKlant(klant);
             klant.getOrders().add(nieuwOrderMetPrijs);
             this.OrderRepository.save(nieuwOrderMetPrijs);
@@ -166,10 +181,10 @@ System.out.println(klantId);
 
 
     }
-//TODO hier moet de klant zijn punten krijgen
+
     @PatchMapping("/order/confirm/{orderId}")
     // werkt met http://localhost:8080/api/order/bevestig/1
-    //Maak wel eerst een order
+//E is geen order als je de database aanmaakt
     public ResponseEntity<Order> BevestigOrder(@PathVariable long orderId) {
 
         Optional<Order> optionerelOrder = this.OrderRepository.findById(orderId);
@@ -179,9 +194,9 @@ System.out.println(klantId);
             logger.debug(order.getKlant().klantNumber.toString());
 
             order.setBestellingsStatus(Order.BestellingStatus.Bevestigd);
-            Optional<Klant> optioneleKlant=   this.KlantRepository.findById( order.getKlant().getKlantNumber());
+            Optional<Customer> optioneleKlant=   this.KlantRepository.findById( order.getKlant().getKlantNumber());
             if(optioneleKlant.isPresent()){
-                Klant klant=optioneleKlant.get();
+                Customer klant=optioneleKlant.get();
                 klant.setPoints((int)Math.round(klant.getPoints()+order.getTotaalprijs())/10);
 
             }
@@ -209,28 +224,33 @@ System.out.println(klantId);
 
     @PatchMapping("/order/cancel/{orderId}")
     public ResponseEntity<Order> AnnuleerOrder(@PathVariable(required = true) long orderId) {
-        Optional<Order> optionerelOrder = this.OrderRepository.findById(orderId);
-        if (optionerelOrder.isPresent()) {
+      if(BeforeTenOClock()) {
+          Optional<Order> optionerelOrder = this.OrderRepository.findById(orderId);
+          if (optionerelOrder.isPresent()) {
 
 
-            Order order = optionerelOrder.get();
-            if (order.getBestellingsStatus() != Order.BestellingStatus.Bevestigd) {
-                order.setBestellingsStatus(Order.BestellingStatus.Geannulleerd);
-                return ResponseEntity.ok().body(order);
+              Order order = optionerelOrder.get();
+              if (order.getBestellingsStatus() != Order.BestellingStatus.Bevestigd) {
+                  order.setBestellingsStatus(Order.BestellingStatus.Geannulleerd);
+                  return ResponseEntity.ok().body(order);
 
-            } else {
-                return ResponseEntity.status(405).build();
-
-
-            }
+              } else {
+                  return ResponseEntity.status(405).build();
 
 
-        } else {
+              }
 
-            return ResponseEntity.notFound().build();
 
-        }
+          } else {
 
+              return ResponseEntity.notFound().build();
+
+          }
+      }
+      else{
+          //Todo custom errormessages @ControllerAdvice
+          throw new AfterTenOClockError();
+      }
 
     }
 
@@ -240,7 +260,7 @@ System.out.println(klantId);
     private Order SetPrijsinfo(Order order) {
         AtomicReference<Double> prijsZonderKorting = new AtomicReference<>((double) 0);
         double absoluteKorting=0.0;
-        Klant klant=order.getKlant();
+        Customer klant=order.getKlant();
 
 
    System.out.println(order.getProducs().size());
@@ -272,12 +292,12 @@ Optional<LoyalityClasses> optionalClass= loyalityClassManager.findAll().stream()
 
 
     @GetMapping("/Klant/loyaliteit")
-    public ResponseEntity<LoyalityClasses> VerkrijgLoyaliteitsNiveau(@RequestBody Long klantId) throws IOException {
+    public ResponseEntity<LoyalityClasses> ObtainLoyalityInfo(@RequestBody Long klantId)  {
 
-        Optional<Klant> optioneleKlant = this.KlantRepository.findById(klantId);
+        Optional<Customer> optioneleKlant = this.KlantRepository.findById(klantId);
 
         if (optioneleKlant.isPresent()) {
-            Klant klant = optioneleKlant.get();
+            Customer klant = optioneleKlant.get();
             return ResponseEntity.ok().body(VerkrijgKlasse(klant.getPoints()));
 
         } else {
@@ -288,14 +308,14 @@ Optional<LoyalityClasses> optionalClass= loyalityClassManager.findAll().stream()
     }
 
 
-    //Blijkbaar is er ook een exists by id methode
-//Er is over nadenken hoe dat we dit kunnen doen
+//TODO eigenlijke sorteren werkt nog niet.
+    //Schrijf in de klantenrepository een methode die een Sort accepteert
     @GetMapping("/order")
     public ResponseEntity<List<Order>> GetOrders(@RequestBody Long klantId, @RequestParam Optional<String> datum, @RequestParam Optional<String> status) {
 
-        Optional<Klant> optioneleKlant = KlantRepository.findById(klantId);
+        Optional<Customer> optioneleKlant = KlantRepository.findById(klantId);
         if (optioneleKlant.isPresent()) {
-            Klant klant = optioneleKlant.get();
+            Customer klant = optioneleKlant.get();
 
             List<Order> orders = new ArrayList<>();
             if (datum.isPresent()) {
@@ -314,5 +334,16 @@ Optional<LoyalityClasses> optionalClass= loyalityClassManager.findAll().stream()
         }
     }
 
+    private static boolean BeforeTenOClock(){
+        LocalTime hour=LocalTime.now();
+        return hour.isBefore(LocalTime.of(22, 0, 0));
 
+    }
+
+    @GetMapping("/testRabbit")
+public void TestRabbit(){
+
+     Order order=   this.OrderRepository.findAll().get(0);
+        this.rabbitSender.SendOrderToBaker(order);
+    }
 }
