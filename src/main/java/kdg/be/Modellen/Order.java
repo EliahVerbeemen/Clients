@@ -15,87 +15,84 @@ public class Order {
     // Properties
     @Id
     @GeneratedValue
-    private Long orderNumber;
-
-    @ManyToOne(optional = true,cascade =CascadeType.ALL,fetch = FetchType.EAGER)
-   // @JoinColumn(   name = "klant_id")
+    private Long orderId;
+    @ManyToOne(optional = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    // @JoinColumn(   name = "klant_id")
     @JsonBackReference
-    private Customer klant;
-
-
-    private LocalDate bestelDatum;
-  //  @JsonSerialize(keyUsing = OrdersDeserialisatie.class)
-
+    private Client klant;
+    private LocalDate orderDate;
+    //  @JsonSerialize(keyUsing = OrdersDeserialisatie.class)
     @Transient
-    public double Korting;
+    public double discount;
+    public double totalPrice;
 
-    public double Totaalprijs;
+    private OrderStatus orderStatus;
 
-    private BestellingStatus BestellingsStatus;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Map<Long, Integer> products = new HashMap<>();
 
-    @ElementCollection(fetch=FetchType.EAGER)
-    private Map<Long,Integer> producs=new HashMap<>();
+    @ElementCollection
+    private List<String> Remarks = new ArrayList<>();
 
     //Berekende kolom prijs
     // GET & SET
-    public Long getOrderNumber() {
-        return orderNumber;
+    public Long getOrderId() {
+        return orderId;
     }
 
-    public void setOrderNumber(Long orderNumber) {
-        this.orderNumber = orderNumber;
+    public void setOrderId(Long orderNumber) {
+        this.orderId = orderNumber;
     }
 
-    public Customer getKlant() {
+    public Client getClient() {
         return klant;
     }
 
-    public void setKlant(Customer klant) {
+    public void setClient(Client klant) {
         this.klant = klant;
     }
 
-    public LocalDate getBestelDatum() {
-        return bestelDatum;
+    public LocalDate getOrderDate() {
+        return orderDate;
     }
 
-    public void setBestelDatum(LocalDate bestelDatum) {
-        this.bestelDatum = bestelDatum;
+    public void setOrderDate(LocalDate bestelDatum) {
+        this.orderDate = bestelDatum;
     }
-
 
 
 //Voor communicatie naar de klant
 
-    public double getTotaalprijs() {
-        return Totaalprijs;
+    public double getTotalPrice() {
+        return totalPrice;
     }
 
-    public void setTotaalprijs(double totaalprijs) {
-        Totaalprijs = totaalprijs;
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
-    public double getKorting() {
-        return Korting;
+    public double getDiscount() {
+        return discount;
     }
 
-    public void setKorting(double korting) {
-        Korting = korting;
+    public void setDiscount(double discount) {
+        this.discount = discount;
     }
 
-    public BestellingStatus getBestellingsStatus() {
-        return BestellingsStatus;
+    public OrderStatus getOrderStatus() {
+        return orderStatus;
     }
 
-    public void setBestellingsStatus(BestellingStatus bestellingsStatus) {
-        BestellingsStatus = bestellingsStatus;
+    public void setOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
     }
 
-    public Map<Long, Integer> getProducs() {
-        return producs;
+    public Map<Long, Integer> getProducts() {
+        return products;
     }
 
-    public void setProducs(Map<Long, Integer> producs) {
-        this.producs = producs;
+    public void setProducts(Map<Long, Integer> producs) {
+        this.products = producs;
     }
 
     public List<String> getRemarks() {
@@ -106,30 +103,28 @@ public class Order {
         Remarks = remarks;
     }
 
-    @ElementCollection
-    private List<String> Remarks=new ArrayList<>();
     // Constructors
-    public Order(Customer klant, LocalDate bestelDatum, Map<Long, Integer> producten, BestellingStatus bestellingsStatus) {
+    public Order(Client klant, LocalDate orderDate, Map<Long, Integer> producten, OrderStatus orderStatus) {
 
         this.klant = klant;
-        this.bestelDatum = bestelDatum;
-        producs = producten;
-        BestellingsStatus = bestellingsStatus;
+        this.orderDate = orderDate;
+        products = producten;
+        this.orderStatus = orderStatus;
     }
 
-    public Order( Map<Long, Integer> producten, Customer klant) {
+    public Order(Map<Long, Integer> producten, Client klant) {
 
         this.klant = klant;
-        producs = producten;
+        products = producten;
 
     }
 
-    public Order(){
+    public Order() {
 
     }
 
 
-    public enum BestellingStatus {
+    public enum OrderStatus {
         Niet_bevestigd,
         Bevestigd,
         Geannulleerd

@@ -1,11 +1,11 @@
 package kdg.be.Controllers;
 
 import kdg.be.Managers.LoyalityClassManager;
-import kdg.be.Modellen.Customer;
+import kdg.be.Modellen.Client;
 import kdg.be.Modellen.LoyalityClasses;
 import kdg.be.Modellen.Order;
 import kdg.be.Modellen.Product;
-import kdg.be.Repositories.KlantRepository;
+import kdg.be.Repositories.ClientRepository;
 import kdg.be.Repositories.OrderRepository;
 import kdg.be.Repositories.ProductRepository;
 import org.springframework.web.bind.annotation.*;
@@ -13,17 +13,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-public class CustomerManagerController {
+public class ClientManagerController {
 
 private LoyalityClassManager loyalityClassManager;
-private KlantRepository klantRepository;
+private ClientRepository clientRepository;
 private ProductRepository productRepository;
 private OrderRepository orderRepository;
 
-  public  CustomerManagerController(LoyalityClassManager loyalityClassManager, KlantRepository klantRepository, ProductRepository productRepository
-  ,OrderRepository orderRepository){
+  public ClientManagerController(LoyalityClassManager loyalityClassManager, ClientRepository clientRepository, ProductRepository productRepository
+  , OrderRepository orderRepository){
       this.loyalityClassManager=loyalityClassManager;
-this.klantRepository=klantRepository;
+this.clientRepository = clientRepository;
 this.productRepository=productRepository;
 this.orderRepository=orderRepository;
   }
@@ -46,9 +46,9 @@ public List<LoyalityClasses> ShowLoyalityClasses(){
 
     }
     @GetMapping("/customers")
-    public List<Customer> AllCustomers(){
+    public List<Client> AllCustomers(){
 
-        return klantRepository.findAll();
+        return clientRepository.findAll();
 
 
     }

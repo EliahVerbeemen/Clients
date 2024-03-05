@@ -1,20 +1,5 @@
 package kdg.be.Managers;
 
-import kdg.be.AfterTenOClockError;
-import kdg.be.Controllers.CustomerController;
-import kdg.be.Modellen.Order;
-import kdg.be.Modellen.ProductState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.stream.Collectors;
-
 //Enkel bevestige orders toevoegen!
 /*@Component
 public class BatchManager implements IBatchManager {

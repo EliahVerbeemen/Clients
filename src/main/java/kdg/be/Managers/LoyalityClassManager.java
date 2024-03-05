@@ -14,19 +14,20 @@ public class LoyalityClassManager implements ILoyalityClassManager {
 
     private LoyalityClassRepository loyalityClassRepository;
 
-    public LoyalityClassManager(LoyalityClassRepository loyalityClassRepository){
-        this.loyalityClassRepository=loyalityClassRepository;
+    public LoyalityClassManager(LoyalityClassRepository loyalityClassRepository) {
+        this.loyalityClassRepository = loyalityClassRepository;
 
 
     }
-    public List<LoyalityClasses> findAll(){
-       return loyalityClassRepository.findAll(Sort.by("minimumPoints"));
+
+    public List<LoyalityClasses> findAll() {
+        return loyalityClassRepository.findAll(Sort.by("minimumPoints"));
     }
 
-    public LoyalityClasses save(LoyalityClasses loyalityClasses){
+    public LoyalityClasses save(LoyalityClasses loyalityClasses) {
 
-        Optional<LoyalityClasses> optioneelIsKlasseAlPresent=loyalityClassRepository.findAll().stream().filter(e->e.getMinimumPoints()==loyalityClasses.getMinimumPoints()).findFirst();
-            optioneelIsKlasseAlPresent.ifPresent(classes -> loyalityClassRepository.delete(classes));
+        Optional<LoyalityClasses> optioneelIsKlasseAlPresent = loyalityClassRepository.findAll().stream().filter(e -> e.getMinimumPoints() == loyalityClasses.getMinimumPoints()).findFirst();
+        optioneelIsKlasseAlPresent.ifPresent(classes -> loyalityClassRepository.delete(classes));
         return loyalityClassRepository.save(loyalityClasses);
     }
 

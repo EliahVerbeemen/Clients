@@ -8,7 +8,4 @@ public enum ProductState {
     Gedeactiveerd
 
 
-
-
-
 }

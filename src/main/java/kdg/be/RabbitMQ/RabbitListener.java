@@ -38,7 +38,7 @@ public class RabbitListener {
       if(optionalProductToConfirm.isPresent()){
 
           Product product=optionalProductToConfirm.get();
-          product.setGedeactiveerd(true);
+          product.setActive(true);
           productRepository.save(product);
 
       }

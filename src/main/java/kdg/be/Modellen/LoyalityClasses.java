@@ -8,18 +8,16 @@ import jakarta.persistence.Id;
 @Entity
 public  class LoyalityClasses {
 
+    //Properties
     @Id
     @GeneratedValue
     private Long loyalityClassId;
     private String name;
-
     private int minimumPoints;
-
     //Waarde tussen 0 en 1;
     private double reduction;
 
-
-
+    //GET & SET
     public String getName() {
         return name;
     }

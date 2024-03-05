@@ -9,12 +9,12 @@ public class ProductFromBakery {
     private Long productId;
 
 
-
     public ProductFromBakery(String name, ProductState productState, Long productId) {
         this.name = name;
         this._ProductStatus = productState;
         this.productId = productId;
     }
+
     public String getName() {
         return name;
     }
@@ -38,8 +38,9 @@ public class ProductFromBakery {
     public void setProductId(Long productId) {
         this.productId = productId;
     }
+
     @Override
     public String toString() {
-        return this .name + " " + this.productId.toString();
+        return this.name + " " + this.productId.toString();
     }
 }

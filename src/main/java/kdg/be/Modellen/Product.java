@@ -1,7 +1,5 @@
 package kdg.be.Modellen;
 
-import jakarta.annotation.Nullable;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -12,47 +10,44 @@ public class Product {
     //Properties
     @Id
     @GeneratedValue
-    private Long ProductNumber;
+    private Long productId;
 
 
  /*@ElementCollection
     private Map<Ingredient,int> Ingredienten;
 */
 
-
-
-    private double Prijs;
-    private String Naam;
+    private double price;
+    private String name;
     //  private String Recept;
-    private boolean Gedeactiveerd = false;
+    private boolean active = false;
     //private boolean Finaal=false;
-private Long bakkeryId;
+    private Long bakkeryId;
 
     // GET & SET
-    public Long getProductNumber() {
-        return ProductNumber;
+    public Long getProductId() {
+        return productId;
     }
 
     public void setProductNumeber(Long productNumeber) {
-        ProductNumber = productNumeber;
+        productId = productNumeber;
     }
 
-    public double getPrijs() {
-        return Prijs;
+    public double getPrice() {
+        return price;
     }
 
-    public void setPrijs(double prijs) {
-        Prijs = prijs;
+    public void setPrice(double price) {
+        this.price = price;
     }
 
-    public String getNaam() {
-        return Naam;
+    public String getName() {
+        return name;
     }
 
-    public void setNaam(String naam) {
-        Naam = naam;
+    public void setName(String name) {
+        this.name = name;
     }
-
 
     //deze applicatie heeft geen interesse in een recept
   /*  public String getRecept() {
@@ -63,26 +58,26 @@ private Long bakkeryId;
         Recept = recept;
     }*/
 
-    public boolean isGedeactiveerd() {
-        return Gedeactiveerd;
+    public boolean isActive() {
+        return active;
     }
 
-    public void setGedeactiveerd(boolean gedeactiveerd) {
-        Gedeactiveerd = gedeactiveerd;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
-    public Product(double prijs, String naam,  Long bakkeryId) {
-        Prijs = prijs;
-        Naam = naam;
-       this.bakkeryId=bakkeryId;
+    public Product(double price, String name, Long bakkeryId) {
+        this.price = price;
+        this.name = name;
+        this.bakkeryId = bakkeryId;
     }
 
     // Constructors
     public Product() {
     }
 
-    public Product(String naam, double prijs) {
-        Prijs = prijs;
-        Naam = naam;
+    public Product(String name, double price) {
+        this.price = price;
+        this.name = name;
     }
 }

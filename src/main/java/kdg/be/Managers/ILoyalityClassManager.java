@@ -7,6 +7,7 @@ import java.util.List;
 public interface ILoyalityClassManager {
 
     public List<LoyalityClasses> findAll();
+
     public LoyalityClasses save(LoyalityClasses loyalityClasses);
 
 }
