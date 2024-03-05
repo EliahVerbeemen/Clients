@@ -1,6 +1,7 @@
 package kdg.be.Controllers;
 
 import kdg.be.AfterTenOClockError;
+import kdg.be.Managers.ClientManager;
 import kdg.be.Managers.LoyalityClassManager;
 import kdg.be.Modellen.*;
 import kdg.be.Modellen.DTO.ClientWithProdcuts;
@@ -26,17 +27,20 @@ import java.util.concurrent.atomic.AtomicReference;
 //Elke oute begint met api (conventie voor api's)
 @RequestMapping("/api")
 public class ClientController {
+    //Remove ClientRepo once ClientManager is done
     private ClientRepository ClientRepository;
+    private ClientManager clientMgr;
     private OrderRepository OrderRepository;
     private ProductRepository productRepository;
     private LoyalityClassManager loyalityClassManager;
     private RabbitSender rabbitSender;
     Logger logger = LoggerFactory.getLogger(ClientController.class);
 
-    public ClientController(ClientRepository clientRepository, OrderRepository orderRepository, ProductRepository productRepository, LoyalityClassManager loyalityClassManager
+    public ClientController(ClientRepository clientrepo, ClientManager clientManager, OrderRepository orderRepository, ProductRepository productRepository, LoyalityClassManager loyalityClassManager
             , RabbitSender rabbitSender) {
 
-        this.ClientRepository = clientRepository;
+        this.ClientRepository = clientrepo;
+        this.clientMgr = clientManager;
         this.OrderRepository = orderRepository;
         this.productRepository = productRepository;
         this.loyalityClassManager = loyalityClassManager;
@@ -53,16 +57,16 @@ public class ClientController {
     //
     @PostMapping(value = "/klant")
     public ResponseEntity<Client> CreateCustomer(@RequestBody Client klant) {
-        this.ClientRepository.save(klant);
-        return ResponseEntity.status(HttpStatus.CREATED).body(klant);
+        Client newClient = this.clientMgr.makeClient(klant);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newClient);
     }
 
     @DeleteMapping(value = "/klant")
     //Postman ==> raw ==>1 (selectbox = json)
     public HttpStatus DeleteCustomer(@RequestBody Long klantId) {
-        Optional<Client> klant = ClientRepository.findById(klantId);
+        Optional<Client> klant = clientMgr.getClientById(klantId);
         if (klant.isPresent()) {
-            ClientRepository.deleteKlantByKlantNumber(klantId);
+            clientMgr.removeClient(klantId);
             return HttpStatus.OK;
         } else {
             return HttpStatus.NOT_FOUND;
@@ -71,12 +75,12 @@ public class ClientController {
 
     @PutMapping(value = "/klant", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Client> UpdateClient(@RequestBody Client geupdateklant) {
-        Optional<Client> oudeklant = this.ClientRepository.findById(geupdateklant.getClientId());
+        Optional<Client> oudeklant = this.clientMgr.getClientById(geupdateklant.getClientId());
         if (oudeklant.isPresent()) {
             Client klant = oudeklant.get();
             klant.setClientType(geupdateklant.getClientType());
-            ClientRepository.save(klant);
-            return ResponseEntity.status(HttpStatus.CREATED).body(klant);
+            Client updatedClient = clientMgr.makeOrUpdateClient(klant);
+            return ResponseEntity.status(HttpStatus.CREATED).body(updatedClient);
         } else {
 
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -111,6 +115,8 @@ public class ClientController {
                     order.getProducts().put(productId, aantal);
                 } else {
                     //Maak de klant er op attent dat we 1 van zijn producten niet kenden;
+                    order.getRemarks().add("Chosen product is not available: " + optioneelproduct.toString());
+
                 }
             });
 
