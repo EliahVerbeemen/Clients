@@ -1,5 +1,6 @@
 package kdg.be.Managers;
 
+import kdg.be.Managers.Interfaces.IClientManager;
 import kdg.be.Modellen.Client;
 import kdg.be.Repositories.ClientRepository;
 import org.springframework.stereotype.Component;

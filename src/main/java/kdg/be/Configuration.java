@@ -1,6 +1,6 @@
 package kdg.be;
 
-import kdg.be.Managers.LoyalityClassManager;
+import kdg.be.Managers.LoyaltyClassManager;
 import kdg.be.Modellen.Client;
 import kdg.be.Modellen.LoyalityClasses;
 import kdg.be.Modellen.Product;
@@ -13,14 +13,14 @@ public class Configuration implements InitializingBean {
     private ProductRepository productRepository;
     private ClientRepository clientRepository;
 
-    private LoyalityClassManager loyalityClassManager;
+    private LoyaltyClassManager loyaltyClassManager;
 
     //Dit is 1 van de mogelijkheden om spring een methode uit te laten voeren
-    public Configuration(ProductRepository productRepository, ClientRepository clientRepository, LoyalityClassManager loyalityClassManager) {
+    public Configuration(ProductRepository productRepository, ClientRepository clientRepository, LoyaltyClassManager loyaltyClassManager) {
 
         this.productRepository = productRepository;
         this.clientRepository = clientRepository;
-        this.loyalityClassManager = loyalityClassManager;
+        this.loyaltyClassManager = loyaltyClassManager;
 
     }
 
@@ -33,10 +33,10 @@ public class Configuration implements InitializingBean {
         clientRepository.save(new Client(Client.ClientType.B2B));
 
         //Voeg de standaard loyaliteitsklasse toe
-        loyalityClassManager.save(new LoyalityClasses("brons", 0, 0d));
-        loyalityClassManager.save(new LoyalityClasses("zilver", 1000, 0.05d));
-        loyalityClassManager.save(new LoyalityClasses("goud", 5000, 0.10d));
-        loyalityClassManager.save(new LoyalityClasses("platina", 10000, 0.20d));
+        loyaltyClassManager.save(new LoyalityClasses("brons", 0, 0d));
+        loyaltyClassManager.save(new LoyalityClasses("zilver", 1000, 0.05d));
+        loyaltyClassManager.save(new LoyalityClasses("goud", 5000, 0.10d));
+        loyaltyClassManager.save(new LoyalityClasses("platina", 10000, 0.20d));
 
     }
 }

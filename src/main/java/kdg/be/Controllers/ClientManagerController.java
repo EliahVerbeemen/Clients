@@ -1,6 +1,6 @@
 package kdg.be.Controllers;
 
-import kdg.be.Managers.LoyalityClassManager;
+import kdg.be.Managers.LoyaltyClassManager;
 import kdg.be.Modellen.Client;
 import kdg.be.Modellen.LoyalityClasses;
 import kdg.be.Modellen.Order;
@@ -15,14 +15,14 @@ import java.util.List;
 @RestController
 public class ClientManagerController {
 
-private LoyalityClassManager loyalityClassManager;
+private LoyaltyClassManager loyaltyClassManager;
 private ClientRepository clientRepository;
 private ProductRepository productRepository;
 private OrderRepository orderRepository;
 
-  public ClientManagerController(LoyalityClassManager loyalityClassManager, ClientRepository clientRepository, ProductRepository productRepository
+  public ClientManagerController(LoyaltyClassManager loyaltyClassManager, ClientRepository clientRepository, ProductRepository productRepository
   , OrderRepository orderRepository){
-      this.loyalityClassManager=loyalityClassManager;
+      this.loyaltyClassManager = loyaltyClassManager;
 this.clientRepository = clientRepository;
 this.productRepository=productRepository;
 this.orderRepository=orderRepository;
@@ -31,7 +31,7 @@ this.orderRepository=orderRepository;
   @GetMapping("/loyality")
 public List<LoyalityClasses> ShowLoyalityClasses(){
 
-    return loyalityClassManager.findAll();
+    return loyaltyClassManager.findAll();
 
 
     }
@@ -39,9 +39,9 @@ public List<LoyalityClasses> ShowLoyalityClasses(){
     @PostMapping("/loyality/create")
     public List<LoyalityClasses> CreateLoyalityClass(@RequestBody LoyalityClasses loyalityClasses){
 
-        loyalityClassManager.save(loyalityClasses);
+        loyaltyClassManager.save(loyalityClasses);
 
-        return loyalityClassManager.findAll();
+        return loyaltyClassManager.findAll();
 
 
     }
