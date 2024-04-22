@@ -3,6 +3,7 @@ package kdg.be.Config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -25,9 +26,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         //Configure HTTP Security
-        http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/loyality")
-                .hasRole("clientmanager"));
+        http.authorizeRequests(authorize -> authorize.requestMatchers("/loyality").authenticated()).oauth2ResourceServer((oauth2) -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
+        http.authorizeRequests(authorize -> authorize.requestMatchers("/loyality/**").authenticated()).oauth2ResourceServer((oauth2) -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
+        http.authorizeRequests(authorize -> authorize.requestMatchers("/customers").authenticated()).oauth2ResourceServer((oauth2) -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
+        http.authorizeRequests(authorize -> authorize.requestMatchers("/customers/**").authenticated()).oauth2ResourceServer((oauth2) -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
+        http.authorizeRequests(authorize -> authorize.requestMatchers("/products/**").authenticated()).oauth2ResourceServer((oauth2) -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
+        http.authorizeRequests(authorize -> authorize.requestMatchers("/orders/**").authenticated()).oauth2ResourceServer((oauth2) -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
+        http.authorizeRequests().anyRequest().permitAll();
         return http.build();
     }
 
