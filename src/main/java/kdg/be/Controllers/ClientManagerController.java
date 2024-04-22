@@ -1,5 +1,6 @@
 package kdg.be.Controllers;
 
+import jakarta.annotation.security.RolesAllowed;
 import kdg.be.Managers.LoyaltyClassManager;
 import kdg.be.Managers.ProductManager;
 import kdg.be.Modellen.*;
@@ -14,32 +15,34 @@ import java.util.List;
 @RestController
 public class ClientManagerController {
 
-private LoyaltyClassManager loyaltyClassManager;
-private ClientRepository clientRepository;
-private ProductRepository productRepository;
+    private final LoyaltyClassManager loyaltyClassManager;
+    private final ClientRepository clientRepository;
+    private final ProductRepository productRepository;
 
-private ProductManager productManager;
-private OrderRepository orderRepository;
+    private final ProductManager productManager;
+    private final OrderRepository orderRepository;
 
-  public ClientManagerController(LoyaltyClassManager loyaltyClassManager,ProductManager productManager, ClientRepository clientRepository, ProductRepository productRepository
-  , OrderRepository orderRepository){
-      this.loyaltyClassManager = loyaltyClassManager;
-this.clientRepository = clientRepository;
-this.productRepository=productRepository;
-this.orderRepository=orderRepository;
-this.productManager=productManager;
-  }
+    public ClientManagerController(LoyaltyClassManager loyaltyClassManager, ProductManager productManager, ClientRepository clientRepository, ProductRepository productRepository
+            , OrderRepository orderRepository) {
+        this.loyaltyClassManager = loyaltyClassManager;
+        this.clientRepository = clientRepository;
+        this.productRepository = productRepository;
+        this.orderRepository = orderRepository;
+        this.productManager = productManager;
+    }
 
-  @GetMapping("/loyality")
-public List<LoyalityClasses> ShowLoyalityClasses(){
+    @GetMapping("/loyality")
+    @RolesAllowed("clientmanager")
+    public List<LoyalityClasses> ShowLoyalityClasses() {
 
-    return loyaltyClassManager.findAll();
+        return loyaltyClassManager.findAll();
 
 
     }
 
     @PostMapping("/loyality/create")
-    public List<LoyalityClasses> CreateLoyalityClass(@RequestBody LoyalityClasses loyalityClasses){
+    @RolesAllowed("clientmanager")
+    public List<LoyalityClasses> CreateLoyalityClass(@RequestBody LoyalityClasses loyalityClasses) {
 
         loyaltyClassManager.save(loyalityClasses);
 
@@ -47,39 +50,47 @@ public List<LoyalityClasses> ShowLoyalityClasses(){
 
 
     }
+
     @GetMapping("/customers")
-    public List<Client> AllCustomers(){
+    @RolesAllowed("clientmanager")
+    public List<Client> AllCustomers() {
 
         return clientRepository.findAll();
 
 
     }
-    @GetMapping("/products/products")
-    public List<Product> AllProducs(){
 
-       return productRepository.findAll();
+    @GetMapping("/products/products")
+    @RolesAllowed("clientmanager")
+    public List<Product> AllProducs() {
+
+        return productRepository.findAll();
 
 
     }
+
     @GetMapping("/products/new")
-    public List<Product> AllNewProducs(){
+    @RolesAllowed("clientmanager")
+    public List<Product> AllNewProducs() {
 
         return productRepository.findProductsBy_productState(ProductState.Nieuw);
 
 
     }
-    @GetMapping("/products/price/{productId}")
-    public Product SetPriceOfProduct(@PathVariable int productId,@RequestBody double price) throws ProductNotFoundException {
 
-
+    @PutMapping("/products/price/{productId}")
+    @RolesAllowed("clientmanager")
+    public Product SetPriceOfProduct(@PathVariable int productId, @RequestBody double price) throws ProductNotFoundException {
 
 
         return productManager.UpdatePriceAndActivate((long) productId, (float) price);
 
 
     }
+
     @GetMapping("/orders/all")
-    public List<Order> AllOrders(){
+    @RolesAllowed("clientmanager")
+    public List<Order> AllOrders() {
 
         return orderRepository.findAll();
 
