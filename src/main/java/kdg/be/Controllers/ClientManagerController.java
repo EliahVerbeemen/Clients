@@ -62,7 +62,7 @@ public class ClientManagerController {
 
     @GetMapping("/products/products")
     @RolesAllowed("clientmanager")
-    public List<Product> AllProducs() {
+    public List<Product> AllProducts() {
 
         return productRepository.findAll();
 

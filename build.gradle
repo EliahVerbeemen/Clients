@@ -22,10 +22,13 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+	implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.3'
+	implementation group: 'com.jayway.jsonpath', name: 'json-path', version: '2.9.0'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.amqp:spring-rabbit-test'
-	implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.3'
+	testImplementation 'org.springframework.security:spring-security-test'
+
 
 }
 
