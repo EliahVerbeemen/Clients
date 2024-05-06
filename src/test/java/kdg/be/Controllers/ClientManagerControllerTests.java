@@ -1,4 +1,4 @@
-package kdg.be;
+package kdg.be.Controllers;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,8 @@ public class ClientManagerControllerTests {
     @WithMockUser(username = "clientmanager", password = "clientmanager", roles = "clientmanager")
     void showLoyalityClassesShouldShowAllClasses() throws Exception {
         mockMvc.perform(get("/loyality").accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(4));
     }
 
     @Test

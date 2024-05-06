@@ -7,7 +7,6 @@ import kdg.be.Managers.OrderManager;
 import kdg.be.Managers.ProductManager;
 import kdg.be.Modellen.Client;
 import kdg.be.Modellen.DTO.ClientWithProducts;
-import kdg.be.Modellen.DTO.ProductFromBakery;
 import kdg.be.Modellen.LoyalityClasses;
 import kdg.be.Modellen.Order;
 import kdg.be.Modellen.Test;
@@ -15,12 +14,10 @@ import kdg.be.RabbitMQ.RabbitSender;
 import kdg.be.testjes.ClientNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.Message;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalTime;
@@ -33,13 +30,13 @@ import java.util.Optional;
 //Elke oute begint met api (conventie voor api's)
 @RequestMapping("/api")
 public class ClientController {
-    Logger logger = LoggerFactory.getLogger(ClientController.class);
     //Remove ClientRepo once ClientManager is done
     private final ClientManager clientMgr;
     private final OrderManager orderMgr;
     private final ProductManager productMgr;
     private final LoyaltyClassManager loyaltyclassMgr;
     private final RabbitSender rabbitSender;
+    Logger logger = LoggerFactory.getLogger(ClientController.class);
 
     public ClientController(ClientManager clientManager, OrderManager orderManager, ProductManager productManager, LoyaltyClassManager loyaltyclassMgr
             , RabbitSender rabbitSender) {
@@ -65,23 +62,17 @@ public class ClientController {
 
     //Dus deze route bereik je via /api/klant
     //
-    @GetMapping(value="/klant")
-  public ResponseEntity<Client> GetCustomer(@RequestBody Long id) throws ClientNotFoundException {
+    @GetMapping(value = "/klant")
+    public ResponseEntity<Client> GetCustomer(@RequestBody Long id) throws ClientNotFoundException {
 
-        Optional<Client> client=clientMgr.getClientById(id);
-        if(client.isPresent()){
+        Optional<Client> client = clientMgr.getClientById(id);
+        if (client.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(client.get());
-        }
-        else throw new ClientNotFoundException();//return ResponseEntity<>.status(HttpStatus.NOT_FOUND).body(ClientNotFoundException.class);
-
+        } else
+            throw new ClientNotFoundException();//return ResponseEntity<>.status(HttpStatus.NOT_FOUND).body(ClientNotFoundException.class);
 
 
     }
-
-
-
-
-
 
     @PostMapping(value = "/klant")
     public ResponseEntity<Client> CreateCustomer(@RequestBody Client klant) {
@@ -104,7 +95,7 @@ public class ClientController {
 
     @PutMapping(value = "/klant", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Client> UpdateClient(@RequestBody Client geupdateklant) {
-      logger.debug(geupdateklant.toString());
+        logger.debug(geupdateklant.toString());
         Optional<Client> oudeklant = this.clientMgr.getClientById(geupdateklant.getClientId());
         if (oudeklant.isPresent()) {
             Client klant = oudeklant.get();
@@ -132,10 +123,10 @@ public class ClientController {
             //TODO stuur AMPQ signaal naar batch (methode is al geshreven deserialisatie is misschien nog
             //foutief
 
-         //   Client clientWithOrder = orderMgr.AddOrderToClient(klant, order);
-        //     clientMgr.makeOrUpdateClient(clientWithOrder);
-            clientMgr.addOrderToClient(klant,order);
-            orderMgr.AddOrderToClient(klant,order);
+            //   Client clientWithOrder = orderMgr.AddOrderToClient(klant, order);
+            //     clientMgr.makeOrUpdateClient(clientWithOrder);
+            clientMgr.addOrderToClient(klant, order);
+            orderMgr.AddOrderToClient(klant, order);
             //Validatie geen lege bestellingen of totaalprijze van nul
             if (BeforeTenOClock()) {
                 order.setClient(null);
@@ -172,7 +163,7 @@ public class ClientController {
 
         Optional<Order> orderOptional = orderMgr.getOrderById(orderId);
         //TODO andere foutmelding als order reeds bevestigd is
-        if (orderOptional.isPresent()&&orderOptional.get().getOrderStatus().equals(Order.OrderStatus.Niet_bevestigd)) {
+        if (orderOptional.isPresent() && orderOptional.get().getOrderStatus().equals(Order.OrderStatus.Niet_bevestigd)) {
 
             Order order = orderOptional.get();
             logger.debug(order.getClient().clientId.toString());
