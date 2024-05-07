@@ -38,7 +38,21 @@ Wat wordt er verwacht voor issue 32: Als beheerder wil ik verkooprapporten gener
 
 ### Feedback
 
-_(in te vullen na gesprek)_
+1)  Code moet ordelijker
+    Logica moet uit de controllers
+    Naming conventies volgen: geen underscores en camelcase
+    Gebruik van data transfer objecten
+    Geen nederlands en engels coombineren
+2)  Batchen ==> Jackson bind voor xml
+3)  @Transational boven de methods waar database connecie is.
+4)  Seed the loyality classes
+5)  Rabbit mq credentials injecteren
+6)  Testing voor de client applicatie
+7)  sl4f loging waar gepast
+8)  Proberen om alle rabbitMQ communicatie via json te doen.
+
+
+
 
 # V2
 
