@@ -97,4 +97,15 @@ public class ClientManagerController {
 
     }
 
+        @GetMapping("/report")
+    @RolesAllowed("clientmanager")
+
+    public List<Order> getReport(@RequestParam Optional<List<Long>>clientIds,@RequestParam Optional<List<Long>>productIds,@RequestParam Optional<LocalDate>before,@RequestParam Optional<LocalDate>after){
+     List<Order> orders=  orderRepository.findAll();
+        orders=filterService.dateFilter(orders,before,after);
+orders=filterService.productFilter(orders,productIds);
+orders=filterService.clientsFilter(orders,clientIds);
+return orders;
+    }
+
 }
