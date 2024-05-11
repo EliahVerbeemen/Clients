@@ -1,10 +1,8 @@
 package kdg.be.Modellen;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
+import kdg.be.Modellen.Enums.OrderStatus;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -24,8 +22,8 @@ public class Order {
     /*@JsonIdentityInfo(
             generator = ObjectIdGenerators.PropertyGenerator.class,
             property = "client")*/
-  @JsonBackReference
-    private Client klant;
+    @JsonBackReference
+    private Client client;
     private LocalDate orderDate;
     //  @JsonSerialize(keyUsing = OrdersDeserialisatie.class)
     @Transient
@@ -38,7 +36,7 @@ public class Order {
     private Map<Long, Integer> products = new HashMap<>();
 
     @ElementCollection
-    private List<String> Remarks = new ArrayList<>();
+    private List<String> remarks = new ArrayList<>();
 
     //Berekende kolom prijs
     // GET & SET
@@ -51,11 +49,11 @@ public class Order {
     }
 
     public Client getClient() {
-        return klant;
+        return client;
     }
 
     public void setClient(Client klant) {
-        this.klant = klant;
+        this.client = klant;
     }
 
     public LocalDate getOrderDate() {
@@ -102,25 +100,25 @@ public class Order {
     }
 
     public List<String> getRemarks() {
-        return Remarks;
+        return remarks;
     }
 
     public void setRemarks(List<String> remarks) {
-        Remarks = remarks;
+        this.remarks = remarks;
     }
 
     // Constructors
-    public Order(Client klant, LocalDate orderDate, Map<Long, Integer> producten, OrderStatus orderStatus) {
+    public Order(Client client, LocalDate orderDate, Map<Long, Integer> producten, OrderStatus orderStatus) {
 
-        this.klant = klant;
+        this.client = client;
         this.orderDate = orderDate;
         products = producten;
         this.orderStatus = orderStatus;
     }
 
-    public Order(Map<Long, Integer> producten, Client klant) {
+    public Order(Map<Long, Integer> producten, Client client) {
 
-        this.klant = klant;
+        this.client = client;
         products = producten;
 
     }
@@ -130,9 +128,4 @@ public class Order {
     }
 
 
-    public enum OrderStatus {
-        Niet_bevestigd,
-        Bevestigd,
-        Geannulleerd
-    }
 }

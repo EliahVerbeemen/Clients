@@ -3,11 +3,12 @@ package kdg.be.Xml;
 import jakarta.persistence.Embeddable;
 import jakarta.xml.bind.annotation.*;
 import kdg.be.Modellen.Client;
+import kdg.be.Modellen.Enums.ClientType;
 
 public class Account {
 
   @XmlAttribute(name = "Type")
-  public  Client.ClientType clientType;
+  public ClientType clientType;
 
 
     @Override

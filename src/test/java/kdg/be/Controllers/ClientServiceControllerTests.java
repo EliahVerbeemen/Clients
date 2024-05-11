@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class ClientManagerControllerTests {
+public class ClientServiceControllerTests {
 
     @Autowired
     MockMvc mockMvc;
@@ -26,54 +26,54 @@ public class ClientManagerControllerTests {
 
     @Test
     void showLoyalityClassesShouldBeSecured() throws Exception {
-        mockMvc.perform(get("/loyality").accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/api/internal/loyalty").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     @WithMockUser(username = "clientmanager", password = "clientmanager", roles = "clientmanager")
     void showLoyalityClassesShouldShowAllClasses() throws Exception {
-        mockMvc.perform(get("/loyality").accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/api/internal/loyality").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(4));
     }
 
     @Test
     void allCustomersShouldBeSecured() throws Exception {
-        mockMvc.perform(get("/customers").accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/api/internal/customers").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     @WithMockUser(username = "clientmanager", password = "clientmanager", roles = "clientmanager")
     void allCustomersShouldShowAllCustomers() throws Exception {
-        mockMvc.perform(get("/customers").accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/api/internal/customers").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
     void allProdcutsShouldBeSecured() throws Exception {
-        mockMvc.perform(get("/products/products").accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/api/internal/products/products").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     @WithMockUser(username = "clientmanager", password = "clientmanager", roles = "clientmanager")
     void allProductsShouldShowAllProducts() throws Exception {
-        mockMvc.perform(get("/products/products").accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/api/internal/products/products").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
     void allOrdersShouldBeSecured() throws Exception {
-        mockMvc.perform(get("/orders/all").accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/api/internal/orders/all").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     @WithMockUser(username = "clientmanager", password = "clientmanager", roles = "clientmanager")
     void allOrdersShouldShowAllOrders() throws Exception {
-        mockMvc.perform(get("/orders/all").accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/api/internal/orders/all").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 }

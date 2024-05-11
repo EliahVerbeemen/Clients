@@ -1,8 +1,9 @@
 package kdg.be.Controllers;
 
 import jakarta.annotation.security.RolesAllowed;
-import kdg.be.Managers.LoyaltyClassManager;
-import kdg.be.Managers.ProductManager;
+import kdg.be.Services.FilterService;
+import kdg.be.Services.LoyaltyClassService;
+import kdg.be.Services.ProductService;
 import kdg.be.Modellen.*;
 import kdg.be.Repositories.ClientRepository;
 import kdg.be.Repositories.OrderRepository;
@@ -10,43 +11,49 @@ import kdg.be.Repositories.ProductRepository;
 import kdg.be.testjes.ProductNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
+@RequestMapping("/api/internal")
 public class ClientManagerController {
 
-    private final LoyaltyClassManager loyaltyClassManager;
+    private final LoyaltyClassService loyaltyClassService;
     private final ClientRepository clientRepository;
     private final ProductRepository productRepository;
 
-    private final ProductManager productManager;
+    private final ProductService productService;
     private final OrderRepository orderRepository;
 
-    public ClientManagerController(LoyaltyClassManager loyaltyClassManager, ProductManager productManager, ClientRepository clientRepository, ProductRepository productRepository
-            , OrderRepository orderRepository) {
-        this.loyaltyClassManager = loyaltyClassManager;
+    private final FilterService filterService;
+
+    public ClientManagerController(LoyaltyClassService loyaltyClassService, ProductService productService, ClientRepository clientRepository, ProductRepository productRepository
+            , OrderRepository orderRepository, FilterService filterService) {
+        this.loyaltyClassService = loyaltyClassService;
         this.clientRepository = clientRepository;
         this.productRepository = productRepository;
         this.orderRepository = orderRepository;
-        this.productManager = productManager;
+        this.productService = productService;
+        this.filterService = filterService;
     }
 
-    @GetMapping("/loyality")
+    @GetMapping("/loyalty")
     @RolesAllowed("clientmanager")
-    public List<LoyalityClasses> ShowLoyalityClasses() {
+    public List<LoyaltyClass> ShowLoyalityClasses() {
 
-        return loyaltyClassManager.findAll();
+        return loyaltyClassService.findAll();
 
 
     }
 
-    @PostMapping("/loyality/create")
+    @PostMapping("/loyalty/create")
     @RolesAllowed("clientmanager")
-    public List<LoyalityClasses> CreateLoyalityClass(@RequestBody LoyalityClasses loyalityClasses) {
+    public List<LoyaltyClass> CreateLoyalityClass(@RequestBody LoyaltyClass loyaltyClass) {
 
-        loyaltyClassManager.save(loyalityClasses);
+        loyaltyClassService.save(loyaltyClass);
 
-        return loyaltyClassManager.findAll();
+        return loyaltyClassService.findAll();
 
 
     }
@@ -83,7 +90,7 @@ public class ClientManagerController {
     public Product SetPriceOfProduct(@PathVariable int productId, @RequestBody double price) throws ProductNotFoundException {
 
 
-        return productManager.UpdatePriceAndActivate((long) productId, (float) price);
+        return productService.UpdatePriceAndActivate((long) productId, (float) price);
 
 
     }
@@ -97,15 +104,15 @@ public class ClientManagerController {
 
     }
 
-        @GetMapping("/report")
+    @GetMapping("/report")
     @RolesAllowed("clientmanager")
 
-    public List<Order> getReport(@RequestParam Optional<List<Long>>clientIds,@RequestParam Optional<List<Long>>productIds,@RequestParam Optional<LocalDate>before,@RequestParam Optional<LocalDate>after){
-     List<Order> orders=  orderRepository.findAll();
-        orders=filterService.dateFilter(orders,before,after);
-orders=filterService.productFilter(orders,productIds);
-orders=filterService.clientsFilter(orders,clientIds);
-return orders;
+    public List<Order> getReport(@RequestParam Optional<List<Long>> clientIds, @RequestParam Optional<List<Long>> productIds, @RequestParam Optional<LocalDate> before, @RequestParam Optional<LocalDate> after) {
+        List<Order> orders = orderRepository.findAll();
+        orders = filterService.dateFilter(orders, before, after);
+        orders = filterService.productFilter(orders, productIds);
+        orders = filterService.clientsFilter(orders, clientIds);
+        return orders;
     }
 
 }

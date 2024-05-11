@@ -26,12 +26,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         //Configure HTTP Security
-        http.authorizeRequests(authorize -> authorize.requestMatchers("/loyality").authenticated()).oauth2ResourceServer((oauth2) -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
-        http.authorizeRequests(authorize -> authorize.requestMatchers("/loyality/**").authenticated()).oauth2ResourceServer((oauth2) -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
-        http.authorizeRequests(authorize -> authorize.requestMatchers("/customers").authenticated()).oauth2ResourceServer((oauth2) -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
-        http.authorizeRequests(authorize -> authorize.requestMatchers("/customers/**").authenticated()).oauth2ResourceServer((oauth2) -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
-        http.authorizeRequests(authorize -> authorize.requestMatchers("/products/**").authenticated()).oauth2ResourceServer((oauth2) -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
-        http.authorizeRequests(authorize -> authorize.requestMatchers("/orders/**").authenticated()).oauth2ResourceServer((oauth2) -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
+        http.authorizeRequests(authorize -> authorize.requestMatchers("/api/internal/**").authenticated()).oauth2ResourceServer((oauth2) -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
         http.authorizeRequests().anyRequest().permitAll();
         return http.build();
     }

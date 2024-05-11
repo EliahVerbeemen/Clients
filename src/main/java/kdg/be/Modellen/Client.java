@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
+import kdg.be.Modellen.Enums.ClientType;
 
 import java.io.Serializable;
 import java.util.*;
@@ -22,7 +23,7 @@ public class Client implements Serializable {
     private int points = 0;
     @Enumerated(EnumType.STRING)
     private ClientType ClientType;
-    @OneToMany(mappedBy = "klant", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "client", fetch = FetchType.EAGER)
     @JsonBackReference
     private Set<Order> clientOrders = new HashSet<>(); //Dit is een set, overridde equals en hashcode
 
@@ -65,9 +66,7 @@ public class Client implements Serializable {
         this.clientOrders = klantOrders;
     }
 */
-    public enum ClientType {
-        B2B, B2C
-    }
+
     // Constructors
     public Client(int points) {
         this.points = points;

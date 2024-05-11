@@ -25,7 +25,7 @@ public class ClientControllerTests {
 
     @Test
     void GetCustomerShouldShowCustomer() throws Exception {
-        mockMvc.perform(get("/api/klant")
+        mockMvc.perform(get("/api/client")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"id\": 1}")
                 .accept(MediaType.APPLICATION_JSON))
@@ -34,7 +34,7 @@ public class ClientControllerTests {
 
     @Test
     void CreateCustomerShouldCreateCustomer() throws Exception {
-        mockMvc.perform(post("/api/klant")
+        mockMvc.perform(post("/api/client")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"ClientType\":  \"B2C\", " +
                         "\"points\": 0}"))
@@ -43,7 +43,7 @@ public class ClientControllerTests {
 
     @Test
     void DeleteCustomerShouldDeleteCustomer() throws Exception {
-        mockMvc.perform(delete("/api/klant")
+        mockMvc.perform(delete("/api/client")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"id\": 1}"))
                 .andExpect(status().isOk());
