@@ -7,9 +7,26 @@ public class ClientDTO {
     public Long clientId;
     private int points;
     private ClientType clientType;
-
-
     private String email;
+    private String name;
+    private String familyName;
+
+    public ClientDTO() {
+    }
+
+    public ClientDTO(Long clientId, ClientType clientType) {
+        this.clientId = clientId;
+        this.clientType = clientType;
+    }
+
+    public ClientDTO(Client client) {
+        clientId = client.clientId;
+        points = client.getPoints();
+        clientType = client.getClientType();
+        this.email = client.getEmail();
+        this.name = client.getName();
+        this.familyName = client.getFamilyName();
+    }
 
     public String getEmail() {
         return email;
@@ -39,9 +56,9 @@ public class ClientDTO {
         return clientType;
     }
 
-    private  String name;
-
-    private String familyName;
+    public void setClientType(ClientType clientType) {
+        this.clientType = clientType;
+    }
 
     public String getName() {
         return name;
@@ -57,27 +74,5 @@ public class ClientDTO {
 
     public void setFamilyName(String familyName) {
         this.familyName = familyName;
-    }
-
-    public void setClientType(ClientType clientType) {
-        this.clientType = clientType;
-    }
-
-    public ClientDTO() {
-    }
-
-    public ClientDTO(Long clientId, ClientType clientType) {
-        this.clientId = clientId;
-        this.clientType = clientType;
-
-    }
-
-    public ClientDTO(Client client) {
-        clientId = client.clientId;
-        points = client.getPoints();
-        clientType = client.getClientType();
-        this.email= client.getEmail();
-        this.name= client.getName();
-        this.familyName= client.getFamilyName();
     }
 }

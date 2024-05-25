@@ -1,15 +1,15 @@
 package kdg.be.Controller;
 
 import jakarta.annotation.security.RolesAllowed;
-import kdg.be.Modellen.DTO.ControllerDTO.ClientDTO;
-import kdg.be.Services.ClientService;
-import kdg.be.Services.FilterService;
-import kdg.be.Services.LoyalityClassService;
-import kdg.be.Services.ProductService;
 import kdg.be.Modellen.*;
+import kdg.be.Modellen.DTO.ControllerDTO.ClientDTO;
 import kdg.be.Repositories.ClientRepository;
 import kdg.be.Repositories.OrderRepository;
 import kdg.be.Repositories.ProductRepository;
+import kdg.be.Services.ClientService;
+import kdg.be.Services.FilterService;
+import kdg.be.Services.LoyaltyClassService;
+import kdg.be.Services.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -22,20 +22,17 @@ import java.util.Optional;
 @RequestMapping("/api/internal")
 public class ClientManagerController {
 
-    private final LoyalityClassService loyalityClassService;
+    private final LoyaltyClassService loyaltyClassService;
     private final ClientRepository clientRepository;
-
     private final ClientService clientService;
     private final ProductRepository productRepository;
-
     private final ProductService productService;
     private final OrderRepository orderRepository;
-
     private final FilterService filterService;
 
-    public ClientManagerController(LoyalityClassService loyalityClassService, ClientService clientService, ProductService productService, ClientRepository clientRepository, ProductRepository productRepository
+    public ClientManagerController(LoyaltyClassService loyaltyClassService, ClientService clientService, ProductService productService, ClientRepository clientRepository, ProductRepository productRepository
             , OrderRepository orderRepository, FilterService filterService) {
-        this.loyalityClassService = loyalityClassService;
+        this.loyaltyClassService = loyaltyClassService;
         this.clientService = clientService;
         this.clientRepository = clientRepository;
         this.productRepository = productRepository;
@@ -44,21 +41,21 @@ public class ClientManagerController {
         this.filterService = filterService;
     }
 
-    @GetMapping("/loyality")
+    @GetMapping("/loyalty")
     @RolesAllowed("clientmanager")
-    public List<LoyalityClass> ShowLoyalityClasses() {
-        return loyalityClassService.findAll();
+    public List<LoyaltyClass> ShowLoyaltyClasses() {
+        return loyaltyClassService.findAll();
 
 
     }
 
     @PostMapping("/loyalty/create")
     @RolesAllowed("clientmanager")
-    public List<LoyalityClass> CreateLoyalityClass(@RequestBody LoyalityClass loyalityClass) {
+    public List<LoyaltyClass> CreateLoyaltyClass(@RequestBody LoyaltyClass loyaltyClass) {
 
-        loyalityClassService.save(loyalityClass);
+        loyaltyClassService.save(loyaltyClass);
 
-        return loyalityClassService.findAll();
+        return loyaltyClassService.findAll();
 
 
     }
@@ -73,7 +70,7 @@ public class ClientManagerController {
     }
 
     @GetMapping("/products/products")
-   // @RolesAllowed("clientmanager")
+    @RolesAllowed("clientmanager")
     public List<Product> AllProducts() {
 
         return productRepository.findAll();
@@ -83,38 +80,34 @@ public class ClientManagerController {
 
     @GetMapping("/products/new")
     @RolesAllowed("clientmanager")
-    public List<Product> AllNewProducs() {
+    public List<Product> AllNewProducts() {
 
-        return productRepository.findProductsBy_productState(ProductState.Nieuw);
+        return productRepository.findProductsBy_productState(ProductState.NEW);
 
 
     }
 
     @PutMapping("/products/price/{productId}")
     @RolesAllowed("clientmanager")
-    public Product SetPriceOfProduct(@PathVariable int productId, @RequestBody double price)  {
+    public Product SetPriceOfProduct(@PathVariable int productId, @RequestBody double price) {
 
-   Optional<Product> updatedProduct=productService.UpdatePriceAndActivate((long) productId, (float) price);
-       if(updatedProduct.isPresent()){
+        Optional<Product> updatedProduct = productService.updatePriceAndActivate((long) productId, (float) price);
+        if (updatedProduct.isPresent()) {
 
-           return updatedProduct.get();
-       }
-       else{
-           throw new ResponseStatusException(HttpStatus.NO_CONTENT,"This order could not been found");
-       }
-
+            return updatedProduct.get();
+        } else {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "This order could not been found");
+        }
 
 
     }
 
     @GetMapping("/customer/b2b")
-  //  @RolesAllowed("clientmanager")
+    @RolesAllowed("clientmanager")
     public ClientDTO clientToB2B(String username) {
 
 
-
-
-            return new ClientDTO(clientService.updateToB2B(username));
+        return new ClientDTO(clientService.updateToB2B(username));
 
 
     }

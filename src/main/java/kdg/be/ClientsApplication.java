@@ -9,9 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableRabbit
 @EnableScheduling
 public class ClientsApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(ClientsApplication.class, args);
     }
-
 }

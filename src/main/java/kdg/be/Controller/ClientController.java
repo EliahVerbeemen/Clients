@@ -1,7 +1,6 @@
 package kdg.be.Controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import kdg.be.Modellen.*;
 import kdg.be.Modellen.DTO.ControllerDTO.ClientDTO;
 import kdg.be.Modellen.DTO.ControllerDTO.LoyaltyClassDTO;
@@ -35,28 +34,24 @@ public class ClientController {
     private final ClientService clientService;
     private final OrderService orderService;
     private final ProductService productService;
-    private final LoyalityClassService loyalityClassService;
+    private final LoyaltyClassService loyaltyClassService;
     private final RabbitSender rabbitSender;
 
     private final FilterService filterService;
     Logger logger = LoggerFactory.getLogger(ClientController.class);
 
-    public ClientController(ClientService clientService, OrderService orderService, ProductService productService, LoyalityClassService loyalityClassService
+    public ClientController(ClientService clientService, OrderService orderService, ProductService productService, LoyaltyClassService loyaltyClassService
             , RabbitSender rabbitSender, FilterService filterService) {
 
         this.clientService = clientService;
         this.orderService = orderService;
         this.productService = productService;
-        this.loyalityClassService = loyalityClassService;
+        this.loyaltyClassService = loyaltyClassService;
         this.rabbitSender = rabbitSender;
         this.filterService=filterService;
     }
 
 
-    @GetMapping("/test")
-    public ResponseEntity<Test> testRoute() {
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
 //, @RequestHeader(HttpHeaders.AUTHORIZATION) String language
     @GetMapping(value = "/client")
     public ResponseEntity<ClientDTO> GetCustomer()  {
@@ -110,14 +105,14 @@ public class ClientController {
     public ResponseEntity<OrderDTO> PlaceOrder(@RequestBody Order order) {
 
         Client client = clientService.getClientByJwt(SecurityContextHolder.getContext());
-            Order createdOrder = orderService.CreateOrder(client, order.getProducts());
-        if(createdOrder.getProducts().size()==0) {
+            Order createdOrder = orderService.createOrder(client, order.getProducts());
+        if(createdOrder.getProducts().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "this order does not contain any products, the format is {\"products\":{\"productId\":quantity,\"productId2\":quantity2");
 
         }
 
             clientService.addOrderToClient(client, createdOrder);
-            orderService.AddOrderToClient(client, createdOrder);
+            orderService.addOrderToClient(client, createdOrder);
         createdOrder.setClient(null);
         System.out.println(createdOrder.getProducts().size());
 
@@ -145,7 +140,7 @@ public class ClientController {
 
             if(order.getClient().equals(client)){
 
-                Order repeatedOrder = orderService.RepeatOrder(client, order);
+                Order repeatedOrder = orderService.repeatOrder(client, order);
                 return ResponseEntity.status(HttpStatus.CREATED).body(new OrderDTO(repeatedOrder));
 
 
@@ -187,10 +182,10 @@ if(orderOptional.isPresent()){
     if(order.getClient().equals(client)) {
 
 
-        if (!orderOptional.get().getOrderStatus().equals(OrderStatus.Bevestigd)) {
+        if (!orderOptional.get().getOrderStatus().equals(OrderStatus.CONFIRMED)) {
 
 
-            order.setOrderStatus(OrderStatus.Bevestigd);
+            order.setOrderStatus(OrderStatus.CONFIRMED);
 
 
                 client.setPoints((int) Math.round(client.getPoints() + order.getTotalPrice()) / 10);
@@ -241,8 +236,8 @@ else{
             Optional<Order> orderOptional = orderService.getOrderById(orderId);
             if (orderOptional.isPresent()) {
                 Order order = orderOptional.get();
-                if (order.getOrderStatus() != OrderStatus.Bevestigd) {
-                    order.setOrderStatus(OrderStatus.Geannulleerd);
+                if (order.getOrderStatus() != OrderStatus.CONFIRMED) {
+                    order.setOrderStatus(OrderStatus.CANCELLED);
                     this.orderService.saveOrder(order);
                     return ResponseEntity.ok().body(new OrderDTO(order));
                 } else {
@@ -264,7 +259,7 @@ else{
         Client client=clientService.getClientByJwt(SecurityContextHolder.getContext());
 
 
-            return ResponseEntity.ok().body(new LoyaltyClassDTO(loyalityClassService.getLoyaltyClass(client.getPoints())));
+            return ResponseEntity.ok().body(new LoyaltyClassDTO(loyaltyClassService.getLoyaltyClass(client.getPoints())));
         }
 
 
@@ -324,7 +319,7 @@ if(current.equals(true)){orders=orders.stream().filter(o -> o.getOrderDate().isA
  @GetMapping(value = "/products")
  //Postman ==> raw ==>1 (selectbox = json)
  public List<Product> GetMenu() {
-     return this.productService.getAllProductsByProductState(ProductState.Finaal);
+     return this.productService.getAllProductsByProductState(ProductState.FINAL);
  }
 
     @PostMapping(value = "/xml",consumes = MediaType.APPLICATION_XML_VALUE)

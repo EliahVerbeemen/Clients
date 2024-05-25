@@ -16,23 +16,17 @@ import java.util.Map;
 @JsonSerialize(using = OrderSerializer.class)
 public class Order {
 
+    @Transient
+    public double discount;
+    public double totalPrice;
     // Properties
     @Id
     @GeneratedValue
     private Long orderId;
     @ManyToOne(optional = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    // @JoinColumn(   name = "klant_id")
-    /*@JsonIdentityInfo(
-            generator = ObjectIdGenerators.PropertyGenerator.class,
-            property = "client")*/
     @JsonBackReference
     private Client client;
     private LocalDate orderDate;
-    //  @JsonSerialize(keyUsing = OrdersDeserialisatie.class)
-    @Transient
-    public double discount;
-    public double totalPrice;
-
     private OrderStatus orderStatus;
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -41,7 +35,23 @@ public class Order {
     @ElementCollection
     private List<String> remarks = new ArrayList<>();
 
-    //Berekende kolom prijs
+    // Constructors
+    public Order(Client client, LocalDate orderDate, Map<Long, Integer> orderProducts, OrderStatus orderStatus) {
+        this.client = client;
+        this.orderDate = orderDate;
+        products = orderProducts;
+        this.orderStatus = orderStatus;
+    }
+
+    public Order(Map<Long, Integer> orderProducts, Client client) {
+        this.client = client;
+        products = orderProducts;
+    }
+
+    public Order() {
+
+    }
+
     // GET & SET
     public Long getOrderId() {
         return orderId;
@@ -55,20 +65,17 @@ public class Order {
         return client;
     }
 
-    public void setClient(Client klant) {
-        this.client = klant;
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     public LocalDate getOrderDate() {
         return orderDate;
     }
 
-    public void setOrderDate(LocalDate bestelDatum) {
-        this.orderDate = bestelDatum;
+    public void setOrderDate(LocalDate orderDate) {
+        this.orderDate = orderDate;
     }
-
-
-//Voor communicatie naar de klant
 
     public double getTotalPrice() {
         return totalPrice;
@@ -98,8 +105,8 @@ public class Order {
         return products;
     }
 
-    public void setProducts(Map<Long, Integer> producs) {
-        this.products = producs;
+    public void setProducts(Map<Long, Integer> products) {
+        this.products = products;
     }
 
     public List<String> getRemarks() {
@@ -108,26 +115,6 @@ public class Order {
 
     public void setRemarks(List<String> remarks) {
         this.remarks = remarks;
-    }
-
-    // Constructors
-    public Order(Client client, LocalDate orderDate, Map<Long, Integer> producten, OrderStatus orderStatus) {
-
-        this.client = client;
-        this.orderDate = orderDate;
-        products = producten;
-        this.orderStatus = orderStatus;
-    }
-
-    public Order(Map<Long, Integer> producten, Client client) {
-
-        this.client = client;
-        products = producten;
-
-    }
-
-    public Order() {
-
     }
 
 

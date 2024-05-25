@@ -18,7 +18,7 @@ public class OrderDTO {
     private Map<Long, Integer> products;
     private List<String> remarks;
 
-//Getters en setters anders zit de client enkel de public properties
+
     public OrderDTO (Order order){
         orderId = order.getOrderId();
         client = order.getClient();

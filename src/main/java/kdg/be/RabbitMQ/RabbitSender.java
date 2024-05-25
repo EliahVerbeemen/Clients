@@ -28,7 +28,6 @@ public class RabbitSender {
         }
     }
 
-    //Je zou een purchaseorder kunnen omzetten naar een order. Er is een beetje een id probleem
     public void SendPurchaseOrderToBaker(PurchaseOrder purchaseOrder) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();

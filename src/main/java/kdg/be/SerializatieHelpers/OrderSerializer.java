@@ -15,39 +15,26 @@ public class OrderSerializer extends StdSerializer<Order> {
     protected OrderSerializer(Class<Order> t) {
         super(t);
     }
-
-
     protected OrderSerializer() {
         super((Class<Order>) null);
     }
-
     protected OrderSerializer(JavaType type) {
         super(type);
     }
-
     protected OrderSerializer(Class<?> t, boolean dummy) {
         super(t, dummy);
     }
-
     protected OrderSerializer(StdSerializer<?> src) {
         super(src);
     }
 
     @Override
     public void serialize(Order order, JsonGenerator gen, SerializerProvider provider) throws IOException {
-
-
         gen.writeStartObject();
-        gen.writeNumberField("orderId",order.getOrderId());
-        ObjectMapper objectMapper=new ObjectMapper();
-
-     String products=  objectMapper.writeValueAsString(order.getProducts());
-
-        gen.writeStringField("products",products);
-
+        gen.writeNumberField("orderId", order.getOrderId());
+        ObjectMapper objectMapper = new ObjectMapper();
+        String products = objectMapper.writeValueAsString(order.getProducts());
+        gen.writeStringField("products", products);
         gen.writeEndObject();
-
-
-
     }
 }

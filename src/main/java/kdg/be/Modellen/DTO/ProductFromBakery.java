@@ -4,35 +4,27 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import kdg.be.Modellen.ProductState;
 import kdg.be.SerializatieHelpers.ProductDeserializer;
 
-@JsonDeserialize(using=ProductDeserializer.class)
+@JsonDeserialize(using = ProductDeserializer.class)
 public class ProductFromBakery {
 
     private String name;
-    private ProductState _ProductStatus;
+    private ProductState productState;
     private Long productId;
+    private Long bakeryId;
 
-    public ProductState get_ProductStatus() {
-        return _ProductStatus;
-    }
-
-    public void set_ProductStatus(ProductState _ProductStatus) {
-        this._ProductStatus = _ProductStatus;
-    }
-
-    public Long getBakery_Id() {
-        return bakery_Id;
-    }
-
-    public void setBakery_Id(Long bakery_Id) {
-        this.bakery_Id = bakery_Id;
-    }
-
-    private Long bakery_Id;
-    public ProductFromBakery(String name, ProductState _ProductStatus, Long productId) {
+    public ProductFromBakery(String name, ProductState productState, Long productId) {
         this.name = name;
-        this._ProductStatus = _ProductStatus;
+        this.productState = productState;
         this.productId = productId;
-        this.bakery_Id=productId;
+        this.bakeryId = productId;
+    }
+
+    public Long getBakeryId() {
+        return bakeryId;
+    }
+
+    public void setBakeryId(Long bakeryId) {
+        this.bakeryId = bakeryId;
     }
 
     public String getName() {
@@ -44,11 +36,11 @@ public class ProductFromBakery {
     }
 
     public ProductState getProductState() {
-        return _ProductStatus;
+        return productState;
     }
 
     public void setProductState(ProductState productState) {
-        this._ProductStatus = productState;
+        this.productState = productState;
     }
 
     public Long getProductId() {
@@ -59,9 +51,8 @@ public class ProductFromBakery {
         this.productId = productId;
     }
 
-   @Override
+    @Override
     public String toString() {
-
-       return "name" + this.name + " productId" + this.productId.toString() + "status" + this._ProductStatus;
-   }
+        return "name" + this.name + " productId" + this.productId.toString() + "status" + this.productState;
+    }
 }

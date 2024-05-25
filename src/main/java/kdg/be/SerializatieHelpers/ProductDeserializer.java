@@ -1,6 +1,5 @@
 package kdg.be.SerializatieHelpers;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JavaType;
@@ -11,6 +10,7 @@ import kdg.be.Modellen.ProductState;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+
 @Service
 public class ProductDeserializer extends StdDeserializer<Product> {
     protected ProductDeserializer(Class<?> vc) {
@@ -19,44 +19,33 @@ public class ProductDeserializer extends StdDeserializer<Product> {
     protected ProductDeserializer() {
         super((Class<?>) null);
     }
-
-
-
-
     protected ProductDeserializer(JavaType valueType) {
         super(valueType);
     }
-
     protected ProductDeserializer(StdDeserializer<?> src) {
         super(src);
     }
 
     @Override
     public Product deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
-
-
         JsonNode node = jp.getCodec().readTree(jp);
         System.out.println("node");
-
         System.out.println(node);
         try {
             Long id = node.get("productId").asLong();
             String name = node.get("name").asText();
-            //  String beschrijving= node.get("beschrijving").asText();
             String productStatusString = node.get("productStatus").asText();
             ProductState productState = ProductState.valueOf(productStatusString);
-
-            if(productState.equals(ProductState.Finaal)){
-                productState=ProductState.Nieuw;
-            }
-            else{
-                productState=ProductState.Gedeactiveerd;
+            if (productState.equals(ProductState.FINAL)) {
+                productState = ProductState.NEW;
+            } else {
+                productState = ProductState.DEACTIVATED;
             }
             return new Product(0.0, name, id, productState);
 
-        }catch(Exception ex){
-System.out.println(ex.getMessage());
-return new Product();
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            return new Product();
         }
     }
 }

@@ -1,10 +1,11 @@
 package kdg.be.Xml;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import jakarta.persistence.*;
-import jakarta.xml.bind.annotation.*;
-import kdg.be.Modellen.Client;
-import kdg.be.Modellen.Order;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import kdg.be.SerializatieHelpers.PurchaseOrderSerializer;
 
 import java.io.Serializable;
@@ -13,91 +14,73 @@ import java.util.Date;
 @XmlRootElement(name = "PurchaseOrder")
 @JsonSerialize(using = PurchaseOrderSerializer.class)
 @Entity
-public class PurchaseOrder  implements Serializable {
-
-
-
-    protected int PurchaseOrderNumber;
-
-    Date OrderDate;
-
-
-    protected Account Account;
+public class PurchaseOrder implements Serializable {
+    protected int purchaseOrderNumber;
+    protected Account account;
+    Date orderDate;
     @Id
-    private Long purchasOrderId;
-
-    public Items getItemss() {
-        return itemss;
-    }
-
-    public void setItemss(Items itemss) {
-        this.itemss = itemss;
-    }
+    private Long purchaseOrderId;
+    private Items items = new Items();
 
     public PurchaseOrder() {
 
     }
 
     public PurchaseOrder(int purchaseOrderNumber, Date orderDate) {
-        this.PurchaseOrderNumber = purchaseOrderNumber;
-        OrderDate = orderDate;
+        this.purchaseOrderNumber = purchaseOrderNumber;
+        this.orderDate = orderDate;
     }
+
     public PurchaseOrder(int purchaseOrderNumber) {
-        PurchaseOrderNumber = purchaseOrderNumber;
+        this.purchaseOrderNumber = purchaseOrderNumber;
 
     }
 
     public int getPurchaseOrderNumber() {
-        return PurchaseOrderNumber;
+        return purchaseOrderNumber;
     }
+
     @XmlAttribute(name = "PurchaseOrderNumber")
 
     public void setPurchaseOrderNumber(int purchaseOrderNumber) {
-        PurchaseOrderNumber = purchaseOrderNumber;
+        this.purchaseOrderNumber = purchaseOrderNumber;
     }
-
-
-
-
 
     public Date getOrderDate() {
-        return OrderDate;
+        return orderDate;
     }
-   // @XmlAttribute
-   @XmlAttribute(name = "OrderDate")
+
+    // @XmlAttribute
+    @XmlAttribute(name = "OrderDate")
 
     public void setOrderDate(Date orderDate) {
-        OrderDate = orderDate;
+        this.orderDate = orderDate;
     }
 
-
-    public kdg.be.Xml.Account getAccount() {        return Account;
+    public kdg.be.Xml.Account getAccount() {
+        return account;
     }
-@XmlElement(name = "Account")
+
+    @XmlElement(name = "Account")
     public void setAccount(kdg.be.Xml.Account account) {
-        Account = account;
+        this.account = account;
     }
-
-
-
 
     public Items getItems() {
-        return itemss;
+        return items;
     }
+
     @XmlElement(name = "Items")
 
     public void setItems(Items items) {
-        this.itemss = items;
+        this.items = items;
     }
 
-private Items itemss=new Items();
-
-
-    public void setPurchasOrderId(Long purchasOrderId) {
-        this.purchasOrderId = purchasOrderId;
+    public Long getPurchaseOrderId() {
+        return purchaseOrderId;
     }
 
-    public Long getPurchasOrderId() {
-        return purchasOrderId;
+    public void setPurchaseOrderId(Long purchasOrderId) {
+        this.purchaseOrderId = purchasOrderId;
     }
 }
