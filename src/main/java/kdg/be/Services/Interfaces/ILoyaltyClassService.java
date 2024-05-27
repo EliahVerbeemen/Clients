@@ -9,7 +9,7 @@ import java.util.Set;
 public interface ILoyaltyClassService {
 
     public List<LoyaltyClass> findAll();
-    public LoyaltyClass save(LoyaltyClass loyaltyClass);
+    public LoyaltyClass createLoyaltyClass(LoyaltyClass loyaltyClass);
     public LoyaltyClass getLoyaltyClass(int points);
     public List<Order> calculateDiscounts(Set<Order> orders, double reduction);
 }

@@ -6,7 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import kdg.be.SerializatieHelpers.PurchaseOrderSerializer;
+import kdg.be.SerializationHelpers.PurchaseOrderSerializer;
 
 import java.io.Serializable;
 import java.util.Date;

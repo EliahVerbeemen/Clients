@@ -9,10 +9,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface LoyaltyClassRepository extends JpaRepository<LoyaltyClass,Long> {
+public interface LoyaltyClassRepository extends JpaRepository<LoyaltyClass, Long> {
 
-    public  Optional<LoyaltyClass> findLoyalityClassesByName(String name);
-    public  Optional<LoyaltyClass> findLoyalityClassesByMinimumPoints(int points);
-@Override
-   public List<LoyaltyClass>findAll(Sort sort);
+    Optional<LoyaltyClass> findLoyaltyClassesByName(String name);
+
+    Optional<LoyaltyClass> findLoyaltyClassesByMinimumPoints(int points);
+    @Override
+    List<LoyaltyClass> findAll(Sort sort);
 }

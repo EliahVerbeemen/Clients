@@ -3,7 +3,7 @@ package kdg.be.Modellen;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import kdg.be.SerializatieHelpers.ProductDeserializer;
+import kdg.be.SerializationHelpers.ProductDeserializer;
 
 @Entity
 @JsonDeserialize(using = ProductDeserializer.class)
@@ -20,7 +20,7 @@ public class Product {
     public Long getProductId() {
         return productId;
     }
-    public void setProductNumeber(Long productNumeber) {
+    public void setProductNumber(Long productNumeber) {
         productId = productNumeber;
     }
     public double getPrice() {

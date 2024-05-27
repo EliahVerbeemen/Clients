@@ -35,15 +35,15 @@ public class ClientManagerController {
     @GetMapping("/loyalty")
     @RolesAllowed("clientmanager")
     public List<LoyaltyClass> showLoyaltyClasses() {
-        logger.info("Loyaltyclasses returned");
+        logger.info("Loyalty classes returned");
         return loyaltyClassService.findAll();
     }
 
     @PostMapping("/loyalty/create")
     @RolesAllowed("clientmanager")
     public List<LoyaltyClass> createLoyaltyClass(@RequestBody LoyaltyClass loyaltyClass) {
-        loyaltyClassService.save(loyaltyClass);
-        logger.info("Loyalty Class created: " + loyaltyClass);
+        loyaltyClassService.createLoyaltyClass(loyaltyClass);
+        logger.info("Loyalty Class created: " + loyaltyClass.getName());
         return loyaltyClassService.findAll();
     }
 
@@ -77,7 +77,7 @@ public class ClientManagerController {
             return updatedProduct.get();
         } else {
             logger.warn("Product to update with ID " + productId + " could not be found.");
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "This product could not been found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "This product could not been found");
         }
     }
 

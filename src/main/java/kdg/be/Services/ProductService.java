@@ -26,7 +26,7 @@ public class ProductService implements IProductService {
         return repo.findById(id);
     }
     @Override
-    public List<Product> getAllProductsByProductState(ProductState productState) {return repo.findProductsBy_productState(productState);}
+    public List<Product> getAllProductsByProductState(ProductState productState) {return repo.findProductsByproductState(productState);}
 
     @Override
     public Product receiveProductFromBakery(Product product) {
@@ -61,7 +61,7 @@ public class ProductService implements IProductService {
 
     @Override
     public List<Product> getProductsByState(ProductState state) {
-        return repo.findProductsBy_productState(state);
+        return repo.findProductsByproductState(state);
     }
 
     @Transactional

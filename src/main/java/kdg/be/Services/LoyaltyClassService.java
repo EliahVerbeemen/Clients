@@ -26,23 +26,17 @@ public class LoyaltyClassService implements ILoyaltyClassService {
     }
 
     @Transactional
-    public LoyaltyClass save(LoyaltyClass loyaltyClass) {
-        Optional<LoyaltyClass> optionalIsClassPresent = loyaltyClassRepository.findLoyalityClassesByMinimumPoints(loyaltyClass.getMinimumPoints());
-        if (optionalIsClassPresent.isPresent()) {
-            LoyaltyClass classes = optionalIsClassPresent.get();
+    public LoyaltyClass createLoyaltyClass(LoyaltyClass loyaltyClass) {
+        Optional<LoyaltyClass> optionalIsClassPresent = loyaltyClassRepository.findLoyaltyClassesByMinimumPoints(loyaltyClass.getMinimumPoints());
+        Optional<LoyaltyClass> optionalLoyaltyClass = loyaltyClassRepository.findLoyaltyClassesByName(loyaltyClass.getName());
+        if (optionalIsClassPresent.isPresent() || optionalLoyaltyClass.isPresent()) {
+            LoyaltyClass classes = optionalIsClassPresent.orElseGet(optionalLoyaltyClass::get);
             classes.setName(loyaltyClass.getName());
             classes.setReduction(loyaltyClass.getReduction());
             classes.setMinimumPoints(loyaltyClass.getMinimumPoints());
             return loyaltyClassRepository.save(classes);
         }
-        Optional<LoyaltyClass> optionalLoyalityClass = loyaltyClassRepository.findLoyalityClassesByName(loyaltyClass.getName());
-        if (optionalLoyalityClass.isPresent()) {
-            LoyaltyClass loyaltyClass1 = optionalLoyalityClass.get();
-            loyaltyClass1.setReduction(loyaltyClass.getReduction());
-            loyaltyClass1.setName(loyaltyClass.getName());
-            return loyaltyClassRepository.save(loyaltyClass1);
-        }
-        return loyaltyClassRepository.save(loyaltyClass);
+        return loyaltyClassRepository.save(new LoyaltyClass(loyaltyClass.getName(), loyaltyClass.getMinimumPoints(), loyaltyClass.getReduction()));
     }
 
     public LoyaltyClass getLoyaltyClass(int points) {

@@ -1,10 +1,13 @@
 package kdg.be.Controller;
 
 import com.jayway.jsonpath.JsonPath;
+import kdg.be.Repositories.LoyaltyClassRepository;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -21,6 +24,8 @@ public class ClientManagerControllerTests {
     @Autowired
     MockMvc mockMvc;
 
+    @MockBean
+    LoyaltyClassRepository repo;
     JsonPath jsonPath;
 
     @Test
@@ -54,10 +59,17 @@ public class ClientManagerControllerTests {
     }
     @Test
     @WithMockUser(username = "clientmanager", password = "clientmanager", roles = "clientmanager")
-    void CreateLoyaltyClassShouldCreateClass() throws Exception {
+    void createLoyaltyClassShouldCreateClass() throws Exception {
+        JSONObject loyalty = new JSONObject();
+        loyalty.put("name", "Diamond");
+        loyalty.put("minimumPoints", 500000);
+        loyalty.put("reduction", 0.5);
         mockMvc.perform(post("/api/internal/loyalty/create")
                 .contentType(MediaType.APPLICATION_JSON)
-                );
+                .accept(MediaType.APPLICATION_JSON)
+                .content(loyalty.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[5].name").value("Diamond"));;
     }
 
     @Test

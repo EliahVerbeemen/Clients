@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import kdg.be.Modellen.Enums.OrderStatus;
-import kdg.be.SerializatieHelpers.OrderSerializer;
+import kdg.be.SerializationHelpers.OrderSerializer;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

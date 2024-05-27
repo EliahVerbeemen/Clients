@@ -2,7 +2,7 @@ package kdg.be.Modellen.DTO;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import kdg.be.Modellen.ProductState;
-import kdg.be.SerializatieHelpers.ProductDeserializer;
+import kdg.be.SerializationHelpers.ProductDeserializer;
 
 @JsonDeserialize(using = ProductDeserializer.class)
 public class ProductFromBakery {

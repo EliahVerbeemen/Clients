@@ -1,8 +1,8 @@
 package kdg.be.Modellen;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.*;
 
 @Entity
 public  class LoyaltyClass {
@@ -13,7 +13,6 @@ public  class LoyaltyClass {
     private Long loyaltyClassId;
     private String name;
     private int minimumPoints;
-    //Waarde tussen 0 en 1;
     private double reduction;
 
     //GET & SET
@@ -21,16 +20,12 @@ public  class LoyaltyClass {
         return name;
     }
 
-    public void setName(String naam) {
-        this.name = naam;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Long getLoyaltyClassId() {
         return loyaltyClassId;
-    }
-
-    public void setLoyaltyClassId(Long id) {
-        this.loyaltyClassId = id;
     }
 
     public int getMinimumPoints() {
