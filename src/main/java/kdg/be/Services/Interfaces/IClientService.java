@@ -4,9 +4,11 @@ import kdg.be.Modellen.Client;
 import kdg.be.Modellen.Order;
 import org.springframework.security.core.context.SecurityContext;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface IClientService {
+    public List<Client> getAllClients();
     public Optional<Client> getClientById(long id);
     public Client updateClient(Client client, Client updated);
     public void removeClient(long id);

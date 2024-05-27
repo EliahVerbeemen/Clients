@@ -3,13 +3,9 @@ package kdg.be.Controller;
 import jakarta.annotation.security.RolesAllowed;
 import kdg.be.Modellen.*;
 import kdg.be.Modellen.DTO.ControllerDTO.ClientDTO;
-import kdg.be.Repositories.ClientRepository;
-import kdg.be.Repositories.OrderRepository;
-import kdg.be.Repositories.ProductRepository;
-import kdg.be.Services.ClientService;
-import kdg.be.Services.FilterService;
-import kdg.be.Services.LoyaltyClassService;
-import kdg.be.Services.ProductService;
+import kdg.be.Services.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -21,115 +17,93 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/internal")
 public class ClientManagerController {
-
     private final LoyaltyClassService loyaltyClassService;
-    private final ClientRepository clientRepository;
     private final ClientService clientService;
-    private final ProductRepository productRepository;
     private final ProductService productService;
-    private final OrderRepository orderRepository;
     private final FilterService filterService;
+    private final OrderService orderService;
+    private final Logger logger = LoggerFactory.getLogger(ClientManagerController.class);
 
-    public ClientManagerController(LoyaltyClassService loyaltyClassService, ClientService clientService, ProductService productService, ClientRepository clientRepository, ProductRepository productRepository
-            , OrderRepository orderRepository, FilterService filterService) {
+    public ClientManagerController(LoyaltyClassService loyaltyClassService, ClientService clientService, ProductService productService, FilterService filterService, OrderService orderService) {
         this.loyaltyClassService = loyaltyClassService;
         this.clientService = clientService;
-        this.clientRepository = clientRepository;
-        this.productRepository = productRepository;
-        this.orderRepository = orderRepository;
         this.productService = productService;
         this.filterService = filterService;
+        this.orderService = orderService;
     }
 
     @GetMapping("/loyalty")
     @RolesAllowed("clientmanager")
-    public List<LoyaltyClass> ShowLoyaltyClasses() {
+    public List<LoyaltyClass> showLoyaltyClasses() {
+        logger.info("Loyaltyclasses returned");
         return loyaltyClassService.findAll();
-
-
     }
 
     @PostMapping("/loyalty/create")
     @RolesAllowed("clientmanager")
-    public List<LoyaltyClass> CreateLoyaltyClass(@RequestBody LoyaltyClass loyaltyClass) {
-
+    public List<LoyaltyClass> createLoyaltyClass(@RequestBody LoyaltyClass loyaltyClass) {
         loyaltyClassService.save(loyaltyClass);
-
+        logger.info("Loyalty Class created: " + loyaltyClass);
         return loyaltyClassService.findAll();
-
-
     }
 
     @GetMapping("/customers")
     @RolesAllowed("clientmanager")
-    public List<Client> AllCustomers() {
-
-        return clientRepository.findAll();
-
-
+    public List<Client> getAllClients() {
+        logger.info("List of clients returned");
+        return clientService.getAllClients();
     }
 
     @GetMapping("/products/products")
     @RolesAllowed("clientmanager")
-    public List<Product> AllProducts() {
-
-        return productRepository.findAll();
-
-
+    public List<Product> getAllProducts() {
+        logger.info("List of products returned");
+        return productService.getAllProducts();
     }
 
     @GetMapping("/products/new")
     @RolesAllowed("clientmanager")
-    public List<Product> AllNewProducts() {
-
-        return productRepository.findProductsBy_productState(ProductState.NEW);
-
-
+    public List<Product> getNewProducts() {
+        logger.info("List of NEW products returned");
+        return productService.getProductsByState(ProductState.NEW);
     }
 
     @PutMapping("/products/price/{productId}")
     @RolesAllowed("clientmanager")
-    public Product SetPriceOfProduct(@PathVariable int productId, @RequestBody double price) {
-
+    public Product setPriceOfProduct(@PathVariable int productId, @RequestBody double price) {
         Optional<Product> updatedProduct = productService.updatePriceAndActivate((long) productId, (float) price);
         if (updatedProduct.isPresent()) {
-
+            logger.info("Product has been updated: " + productId);
             return updatedProduct.get();
         } else {
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "This order could not been found");
+            logger.warn("Product to update with ID " + productId + " could not be found.");
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "This product could not been found");
         }
-
-
     }
 
     @GetMapping("/customer/b2b")
     @RolesAllowed("clientmanager")
     public ClientDTO clientToB2B(String username) {
-
-
+        logger.info("Client with username " + username + " has been updated to B2B");
         return new ClientDTO(clientService.updateToB2B(username));
-
-
     }
 
 
     @GetMapping("/orders/all")
     @RolesAllowed("clientmanager")
-    public List<Order> AllOrders() {
-
-        return orderRepository.findAll();
-
-
+    public List<Order> getAllOrders() {
+        logger.info("All order returned");
+        return orderService.getAllOrders();
     }
 
     @GetMapping("/report")
     @RolesAllowed("clientmanager")
-
     public List<Order> getReport(@RequestParam Optional<List<Long>> clientIds, @RequestParam Optional<List<Long>> productIds, @RequestParam Optional<LocalDate> before, @RequestParam Optional<LocalDate> after) {
-        List<Order> orders = orderRepository.findAll();
+        List<Order> orders = orderService.getAllOrders();
         orders = filterService.dateFilter(orders, before, after);
         orders = filterService.productFilter(orders, productIds);
         orders = filterService.clientsFilter(orders, clientIds);
+        logger.info("Order report generated.");
         return orders;
     }
 

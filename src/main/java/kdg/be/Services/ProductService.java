@@ -15,6 +15,12 @@ public class ProductService implements IProductService {
     private ProductRepository repo;
     public ProductService(ProductRepository repository) {
         repo = repository;}
+
+    @Override
+    public List<Product> getAllProducts() {
+        return repo.findAll();
+    }
+
     @Override
     public Optional<Product> getProductById(Long id) {
         return repo.findById(id);
@@ -45,13 +51,17 @@ public class ProductService implements IProductService {
     public Optional<Product> updatePriceAndActivate(Long productId, float price)  {
        Optional<Product> optionalProduct= repo.findById(productId);
         if(optionalProduct.isPresent()){
-
             Product productToUpdate=optionalProduct.get();
             productToUpdate.setProductState(ProductState.FINAL);
             productToUpdate.setPrice(price);
           return Optional.of(repo.save(productToUpdate));
         }
        else return Optional.empty();
+    }
+
+    @Override
+    public List<Product> getProductsByState(ProductState state) {
+        return repo.findProductsBy_productState(state);
     }
 
     @Transactional
@@ -65,4 +75,6 @@ public class ProductService implements IProductService {
         }
         else return Optional.empty();
     }
+
+
 }

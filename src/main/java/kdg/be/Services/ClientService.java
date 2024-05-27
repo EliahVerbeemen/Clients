@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -84,6 +85,10 @@ public class ClientService implements IClientService {
         Jwt jwt = (Jwt) securityContext.getAuthentication().getPrincipal();
         String email = (String) jwt.getClaims().get("email");
         return getClientByUsername(email);
+    }
 
+    @Transactional
+    public List<Client> getAllClients(){
+        return repo.findAll();
     }
 }

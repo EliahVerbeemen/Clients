@@ -184,10 +184,10 @@ public class ClientControllerTests {
 
     @Test
     @Order(8)
-    void getLoyality() throws Exception {
+    void getLoyalty() throws Exception {
 
 
-        mockMvc.perform(get("/api/loyality").with(jwt().authorities(new SimpleGrantedAuthority("user"))
+        mockMvc.perform(get("/api/loyalty").with(jwt().authorities(new SimpleGrantedAuthority("user"))
                         .jwt(jwt -> jwt.claim(StandardClaimNames.EMAIL, "myTestEmail"))).accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().isOk()).andExpect(jsonPath("$.name").value("silver"))
                 .andExpect(jsonPath("$.miniumPoints").value(1000)).andExpect(jsonPath("$.reduction").value(0.05));
