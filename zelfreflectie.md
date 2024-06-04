@@ -58,23 +58,23 @@ Wat wordt er verwacht voor issue 32: Als beheerder wil ik verkooprapporten gener
 
 ## Pre coaching
 
-### Geschatte Progress (in procent): XX%
+### Geschatte Progress (in procent): 99%
 
 ### Status
 
-_Waar sta je globaal? Wat loopt goed en minder goed? Hoe verloopt de samenwerking? Wie heeft globaal welke delen van de applicatie uitgewerkt? (details progress kunnen we bekijken op het issue board)_
+We denken alles goed te geimplementeerd te hebben.
+Eliah heeft na V1 de (de)serialisatie van de communicatie op zich genomen.
+Stefan heeft zich vooral bezig gehouden met het opruimen van de code en refactorings
 
 ### Stories
 
-_(enkel voor stories die speciale aandacht vergen)_
 
 ### Quality
 
-_Acties (refactorings,...) die nog gepland staan om de kwaliteit van je project te verhogen (maak hiervoor issue(s) aan!): [issue nummer]: toelichting_
+Er kunnen nog extra testen en logging toegevoegd worden.
 
 ### Vragen
 
-_eventuele vragen voor je coach_
 
 ## Post coaching
 
