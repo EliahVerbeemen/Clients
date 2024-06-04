@@ -13,6 +13,8 @@ import java.util.Optional;
 @Component
 public class ProductService implements IProductService {
     private ProductRepository repo;
+
+
     public ProductService(ProductRepository repository) {
         repo = repository;}
 
@@ -39,8 +41,6 @@ public class ProductService implements IProductService {
 
         }
         else{
-            System.out.println("products saved");
-            System.out.println(product.getProductState());
             return repo.save(product);
 
         }

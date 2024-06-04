@@ -54,8 +54,6 @@ public class OrderService implements IOrderService {
         Order order = new Order();
         order.setOrderStatus(OrderStatus.NOT_CONFIRMED);
         order.setOrderDate(LocalDate.now());
-        System.out.println("methode");
-        System.out.println(incomingOrder.size());
         Map<Product, Integer> orderProducts = new HashMap<>();
         AtomicReference<Double> subTotal = new AtomicReference<>(0d);
         incomingOrder.forEach((productId, aantal) ->
@@ -67,13 +65,12 @@ public class OrderService implements IOrderService {
                 subTotal.updateAndGet(v -> (product.getPrice() * aantal));
                 order.getProducts().put(productId, aantal);
             } else {
-                System.out.println("niet gevonden");
                 order.getRemarks().add("Chosen product is not available: " + productOptional);
             }
         });
         order.setTotalPrice(subTotal.get());
-        System.out.println("onder aan service");
-        System.out.println(order.getProducts().size());
+
+
         return order;
     }
 
@@ -107,13 +104,13 @@ public class OrderService implements IOrderService {
         AtomicReference<Double> subTotal = new AtomicReference<>((double) 0);
         double discount = 0.0;
         Client client = order.getClient();
-        System.out.println(order.getProducts().size());
+
         LoyaltyClass loyaltyClass = loyaltyService.getLoyaltyClass(client.getPoints());
         order.getProducts().forEach((productKey, quantity) -> {
             Optional<Product> product = productService.getProductById(productKey);
             product.ifPresent(value -> subTotal.updateAndGet(v -> v + value.getPrice() * quantity));
         });
-        System.out.println(subTotal);
+
         discount = subTotal.get() * loyaltyClass.getReduction();
         order.setDiscount(discount);
         order.setTotalPrice(subTotal.get() - discount);

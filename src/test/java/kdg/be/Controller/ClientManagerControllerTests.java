@@ -1,21 +1,16 @@
 package kdg.be.Controller;
 
 import com.jayway.jsonpath.JsonPath;
-import kdg.be.Config.Configuration;
 import kdg.be.Repositories.LoyaltyClassRepository;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -29,7 +24,7 @@ public class ClientManagerControllerTests {
     @Autowired
     MockMvc mockMvc;
 
-    @Autowired
+    @MockBean
     LoyaltyClassRepository repo;
     JsonPath jsonPath;
 
@@ -58,12 +53,9 @@ public class ClientManagerControllerTests {
     @Test
     @WithMockUser(username = "clientmanager", password = "clientmanager", roles = "clientmanager")
     void showLoyaltyClassesShouldShowAllClasses() throws Exception {
-   mockMvc.perform(get("/api/internal/loyalty")
-           .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/api/internal/loyalty").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(4));
-
-
     }
     @Test
     @WithMockUser(username = "clientmanager", password = "clientmanager", roles = "clientmanager")
@@ -75,8 +67,8 @@ public class ClientManagerControllerTests {
         mockMvc.perform(post("/api/internal/loyalty/create")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .content(loyalty.toString())
-                ).andExpect(status().isOk())
+                .content(loyalty.toString()))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$[5].name").value("Diamond"));;
     }
 

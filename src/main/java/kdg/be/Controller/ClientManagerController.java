@@ -32,7 +32,12 @@ public class ClientManagerController {
         this.orderService = orderService;
     }
 
-
+    @GetMapping("/loyalty")
+    @RolesAllowed("clientmanager")
+    public List<LoyaltyClass> showLoyaltyClasses() {
+        logger.info("Loyalty classes returned");
+        return loyaltyClassService.findAll();
+    }
 
     @PostMapping("/loyalty/create")
     @RolesAllowed("clientmanager")
@@ -41,35 +46,6 @@ public class ClientManagerController {
         logger.info("Loyalty Class created: " + loyaltyClass.getName());
         return loyaltyClassService.findAll();
     }
-
-
-    @DeleteMapping("/loyalty/{id}")
-     @RolesAllowed("clientmanager")
-    public List<LoyaltyClass> createLoyaltyClass(@PathVariable Long id) {
-
-
-       Optional<LoyaltyClass>optionalLoyaltyClass= loyaltyClassService.findLoyalityClassById(id);
-       if(optionalLoyaltyClass.isPresent()) {
-           loyaltyClassService.deleteLoyaltyClass(id);
-           logger.info("Loyalty Class removed: " + optionalLoyaltyClass.get().getName());
-       }
-        return loyaltyClassService.findAll();
-    }
-
-
-
-    @GetMapping("/loyalty")
-    @RolesAllowed("clientmanager")
-    public List<LoyaltyClass> showLoyaltyClasses() {
-        logger.info("Loyalty classes returned");
-        return loyaltyClassService.findAll();
-    }
-
-
-
-
-
-
 
     @GetMapping("/customers")
     @RolesAllowed("clientmanager")

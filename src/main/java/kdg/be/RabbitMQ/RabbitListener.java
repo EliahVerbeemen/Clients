@@ -22,7 +22,7 @@ public class RabbitListener {
 
     @org.springframework.amqp.rabbit.annotation.RabbitListener(queues = {"newRecepiesQueue"})
     public void ReceiveRecipe(String incomingRecipe) {
-        System.out.println(incomingRecipe);
+
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -30,7 +30,7 @@ public class RabbitListener {
             productService.receiveProductFromBakery(product);
             logger.info("The bakery has send a new product");
         } catch (JsonProcessingException e) {
-            System.out.println(e.getMessage());
+
             logger.warn("product deserialization failed");
             logger.debug(e.getMessage());
         }

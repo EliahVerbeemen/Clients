@@ -29,32 +29,12 @@ public class LoyaltyClassService implements ILoyaltyClassService {
     public LoyaltyClass createLoyaltyClass(LoyaltyClass loyaltyClass) {
         Optional<LoyaltyClass> optionalIsClassPresent = loyaltyClassRepository.findLoyaltyClassesByMinimumPoints(loyaltyClass.getMinimumPoints());
         Optional<LoyaltyClass> optionalLoyaltyClass = loyaltyClassRepository.findLoyaltyClassesByName(loyaltyClass.getName());
-        if(optionalIsClassPresent.isPresent() && optionalLoyaltyClass.isPresent()){
-            if(optionalIsClassPresent.get().equals(optionalLoyaltyClass.get())){
-                LoyaltyClass classes = optionalIsClassPresent.orElseGet(optionalLoyaltyClass::get);
-                    classes.setReduction(loyaltyClass.getReduction());
-                return loyaltyClassRepository.save(classes);
-            }
-
-        }
-
-
-
-       else if (optionalIsClassPresent.isPresent() ) {
+        if (optionalIsClassPresent.isPresent() || optionalLoyaltyClass.isPresent()) {
             LoyaltyClass classes = optionalIsClassPresent.orElseGet(optionalLoyaltyClass::get);
             classes.setName(loyaltyClass.getName());
             classes.setReduction(loyaltyClass.getReduction());
             classes.setMinimumPoints(loyaltyClass.getMinimumPoints());
             return loyaltyClassRepository.save(classes);
-        }
-       else if(optionalLoyaltyClass.isPresent()){
-
-            LoyaltyClass classes = optionalLoyaltyClass.orElseGet(optionalLoyaltyClass::get);
-            classes.setName(loyaltyClass.getName());
-            classes.setReduction(loyaltyClass.getReduction());
-            classes.setMinimumPoints(loyaltyClass.getMinimumPoints());
-            return loyaltyClassRepository.save(classes);
-
         }
         return loyaltyClassRepository.save(new LoyaltyClass(loyaltyClass.getName(), loyaltyClass.getMinimumPoints(), loyaltyClass.getReduction()));
     }
@@ -62,16 +42,6 @@ public class LoyaltyClassService implements ILoyaltyClassService {
     public LoyaltyClass getLoyaltyClass(int points) {
         Optional<LoyaltyClass> optionalClass = loyaltyClassRepository.findAll().stream().filter(e -> e.getMinimumPoints() < points).max(Comparator.comparingInt(LoyaltyClass::getMinimumPoints));
         return optionalClass.orElseGet(() -> loyaltyClassRepository.findAll().stream().min((e, k) -> e.getMinimumPoints()).orElse(new LoyaltyClass()));
-    }
-
-    public void deleteLoyaltyClass(long id) {
-       loyaltyClassRepository.deleteById(id);
-
-    }
-
-    public Optional<LoyaltyClass> findLoyalityClassById(long id) {
-       return loyaltyClassRepository.findById(id);
-
     }
 
     public List<Order> calculateDiscounts(Set<Order> orders, double reduction) {

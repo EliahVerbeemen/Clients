@@ -24,6 +24,7 @@ public class Item {
     private String SpecialInstruction;
 
     public Item() {
+
     }
 
     public String getProductNumber() {

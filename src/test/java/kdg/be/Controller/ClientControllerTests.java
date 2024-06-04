@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class ClientControllerTest {
+public class ClientControllerTests {
 
     @Autowired
     MockMvc mockMvc;
@@ -58,7 +58,7 @@ public class ClientControllerTest {
                 .andExpect(jsonPath("$.discount").value(0))
                 .andExpect(jsonPath("$.totalPrice").value(25000.0))
                 .andExpect(jsonPath("$.orderDate").value(LocalDate.now().format(pattern)))
-                .andExpect(jsonPath("$.orderStatus").value("NOT_CONFIRMED"))
+                .andExpect(jsonPath("$.orderStatus").value("Niet_bevestigd"))
                 .andExpect(jsonPath("$.products", Matchers.hasEntry("1", 5000)));
 
 
@@ -79,7 +79,7 @@ public class ClientControllerTest {
                 .andExpect(jsonPath("$.discount").value(0))
                 .andExpect(jsonPath("$.totalPrice").value(25000.0))
                 .andExpect(jsonPath("$.orderDate").value(LocalDate.now().format(pattern)))
-                .andExpect(jsonPath("$.orderStatus").value("NOT_CONFIRMED"))
+                .andExpect(jsonPath("$.orderStatus").value("Niet_bevestigd"))
                 .andExpect(jsonPath("$.products", Matchers.hasEntry("1", 5000)));
     }
 
@@ -99,7 +99,7 @@ public class ClientControllerTest {
                 .andExpect(jsonPath("$.discount").value(1250))
                 .andExpect(jsonPath("$.totalPrice").value(23750.0))
                 .andExpect(jsonPath("$.orderDate").value(LocalDate.now().format(pattern)))
-                .andExpect(jsonPath("$.orderStatus").value("CONFIRMED"))
+                .andExpect(jsonPath("$.orderStatus").value("Bevestigd"))
                 .andExpect(jsonPath("$.products", Matchers.hasEntry("1", 5000)));
 
 
@@ -125,7 +125,7 @@ public class ClientControllerTest {
                 .andExpect(jsonPath("$.totalPrice").value(25000.0))
                 .andExpect(jsonPath("$.orderDate").value(LocalDate.now().format(pattern)))
                 //TODO leren spellen
-                .andExpect(jsonPath("$.orderStatus").value("CANCELLED"))
+                .andExpect(jsonPath("$.orderStatus").value("Geannulleerd"))
                 .andExpect(jsonPath("$.products", Matchers.hasEntry("1", 5000)));
 
 
@@ -163,7 +163,7 @@ public class ClientControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
-        System.out.println(mvcResult);
+
 
 
     }
@@ -190,7 +190,7 @@ public class ClientControllerTest {
         mockMvc.perform(get("/api/loyalty").with(jwt().authorities(new SimpleGrantedAuthority("user"))
                         .jwt(jwt -> jwt.claim(StandardClaimNames.EMAIL, "myTestEmail"))).accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().isOk()).andExpect(jsonPath("$.name").value("silver"))
-                .andExpect(jsonPath("$.minimumPoints").value(1000)).andExpect(jsonPath("$.reduction").value(0.05));
+                .andExpect(jsonPath("$.miniumPoints").value(1000)).andExpect(jsonPath("$.reduction").value(0.05));
 
 
     }
@@ -204,10 +204,10 @@ public class ClientControllerTest {
 
         MvcResult mvcResult = mockMvc.perform(get("/api/order").with(jwt().authorities(new SimpleGrantedAuthority("user"))
                         .jwt(jwt -> jwt.claim(StandardClaimNames.EMAIL, "myTestEmail"))).accept(MediaType.APPLICATION_JSON)
-                ).andExpect(status().isOk()).andExpect(jsonPath("$[0].orderId").value(1)).andExpect(jsonPath("$[0].orderStatus").value("Geannulleerd"))
+                ).andExpect(status().isOk()).andExpect(jsonPath("$[0].orderId").value(2)).andExpect(jsonPath("$[0].orderStatus").value("Geannulleerd"))
                 .andExpect(jsonPath("$[0].orderDate").value(LocalDate.now().format(pattern)))
                 .andReturn();
-        System.out.println(mvcResult.getResponse().getContentAsString());
+
     }
 
 

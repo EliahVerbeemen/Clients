@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
-import java.util.Objects;
-
 @Entity
 public  class LoyaltyClass {
 
@@ -54,17 +52,5 @@ public  class LoyaltyClass {
     }
 
     public LoyaltyClass() {
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof LoyaltyClass that)) return false;
-        return minimumPoints == that.minimumPoints && Objects.equals(name, that.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, minimumPoints);
     }
 }

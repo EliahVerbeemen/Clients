@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-//TODO batch
+
 @RestController
 @RequestMapping("/api")
 public class ClientController {
@@ -226,7 +226,7 @@ public class ClientController {
 
     @GetMapping(value = "/products")
     public List<Product> getMenu() {
-        logger.info("Menu sent");
+
         return this.productService.getAllProductsByProductState(ProductState.FINAL);
     }
 

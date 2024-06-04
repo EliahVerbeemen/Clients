@@ -26,11 +26,12 @@ public class ProductDeserializer extends StdDeserializer<Product> {
         super(src);
     }
 
+
+
+
     @Override
     public Product deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
         JsonNode node = jp.getCodec().readTree(jp);
-        System.out.println("node");
-        System.out.println(node);
         try {
             Long id = node.get("productId").asLong();
             String name = node.get("name").asText();
@@ -44,7 +45,7 @@ public class ProductDeserializer extends StdDeserializer<Product> {
             return new Product(0.0, name, id, productState);
 
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+
             return new Product();
         }
     }
